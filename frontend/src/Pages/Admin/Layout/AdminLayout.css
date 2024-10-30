@@ -1,0 +1,47 @@
+/* AdminLayout.css */
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full height of the viewport */
+  }
+  
+  .flex {
+    display: flex; /* Set flex properties */
+    flex: 1; /* Allow flex items to grow */
+  }
+  
+  .content {
+    flex: 1; /* This allows the content to grow */
+    margin-left: 250px; /* Adjust based on your sidebar width */
+    overflow-y: auto; /* Allow content to scroll */
+    padding: 20px; /* Padding for the content area */
+    height: calc(100vh - 64px); /* Adjust for header height if necessary */
+  }
+  
+  .sidebar {
+    position: fixed; /* Fix the sidebar */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    width: 200px; /* Sidebar width */
+    height: 100%; /* Full height */
+    background-color: #323232; /* Background color */
+    color: white; /* Text color */
+    padding: 2px; /* Padding inside sidebar */
+    overflow-y: auto; /* Allow sidebar content to scroll */
+    z-index: 10; /* Ensure sidebar stays on top */
+  }
+  
+  /* Optional: Responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar {
+      position: relative; /* Change to relative on smaller screens */
+      width: 100%; /* Full width */
+      height: auto; /* Auto height */
+    }
+  
+    .content {
+      margin-left: 0; /* Reset margin */
+    }
+  }
+  
