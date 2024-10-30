@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 /*.............................................parent.............................................*/
 const axiosInstance = axios.create({
-    baseURL:'http://localhost:5000',
+    //baseURL:'http://localhost:5000',
+    baseURL:'http://3.110.136.162',
     headers:{
         'Content-Type':'application/json'
     },
@@ -57,7 +58,8 @@ axiosInstance.interceptors.response.use((response) => {
 
 /*................................................doctor......................................................*/
 const axiosInstanceDoctor = axios.create({
-    baseURL:'http://localhost:5000',
+   // baseURL:'http://localhost:5000',
+    baseURL:'http://3.110.136.162',
     headers:{
         'Content-Type':'application/json'
     }
@@ -106,7 +108,8 @@ axiosInstanceDoctor.interceptors.response.use((response) => {
 
 /*.............................................admin.............................................*/
 const axiosInstanceAdmin = axios.create({
-    baseURL:'http://localhost:5000',
+    //baseURL:'http://localhost:5000',
+    baseURL:'http://3.110.136.162',
     headers:{
         'Content-Type':'application/json'
     }
