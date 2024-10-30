@@ -9,7 +9,7 @@ import { createSocketChatConnection } from './infrastructure/services/socketServ
 import './infrastructure/scheduler/appointmentNotify'
 import './infrastructure/scheduler/slotCleaner'
 
-dotenv.config()
+dotenv.config({path: '../.env' })
 const startServer = async () => {
     try {
       await connectDB()

@@ -21,7 +21,7 @@ require("./infrastructure/scheduler/slotCleaner");
 const socketServerConnection_1 = require("./infrastructure/services/socketServerConnection");
 require("./infrastructure/scheduler/appointmentNotify");
 require("./infrastructure/scheduler/slotCleaner");
-dotenv_1.default.config();
+dotenv_1.default.config({ path: '../.env' });
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, connectDB_1.connectDB)();
