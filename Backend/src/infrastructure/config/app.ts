@@ -17,18 +17,8 @@ const createServer = () => {
   try {
     const app: express.Application = express()
 
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://new-one-pi.vercel.app/',
-    ]
     const corsOptions = {
-      origin: (origin: any, callback: any) => {
-        if (allowedOrigins.includes(origin) || !origin) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
+      origin: 'http://localhost:3000',
       credentials: true,
       methods: 'GET,PUT,PATCH,POST,DELETE',
       allowedHeaders: 'Content-Type,Authorization',
