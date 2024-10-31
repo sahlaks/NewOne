@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import HomePage from "./Pages/Home/HomePage";
 import ParentSignin from "./Pages/Parent/Signin/ParentSignin";
@@ -43,9 +43,15 @@ import Services from "./Pages/Services/Services";
 import ParentAppointmentDetails from "./Pages/Parent/AppointmentDetails/Details";
 import NotFoundPage from "./Components/ErrorPages/NotFound";
 import ServerErrorPage from "./Components/ErrorPages/InternalServer";
+import { setNavigate } from "./utils/navigateHelper";
 
 
 function App() {
+  // const navigate = useNavigate()
+  //   useEffect(() => {
+  //     setNavigate(navigate);
+  // }, [navigate]);
+
   return (
     <>    
     <h1></h1>

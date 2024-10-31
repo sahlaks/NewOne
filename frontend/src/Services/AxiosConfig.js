@@ -2,12 +2,11 @@ import axios from 'axios'
 import { toast } from 'react-toastify';
 import {generateAccessToken, handleLogout} from '../utils/parentFunctions'
 import { generateDoctorAccessToken, handleLogoutDoctor } from './API/DoctorAPI';
-import { useNavigate } from 'react-router-dom';
+import { getNavigate } from '../utils/navigateHelper';
 
 /*.............................................parent.............................................*/
 const axiosInstance = axios.create({
-    //baseURL:'http://localhost:5000',
-    baseURL:'http://3.110.136.162',
+    baseURL:'https://calmnest.site',
     headers:{
         'Content-Type':'application/json'
     },
@@ -18,7 +17,7 @@ axiosInstance.interceptors.response.use((response) => {
     return response;
 },        
     async (error) => {
-        const navigate = useNavigate()
+        const navigate = getNavigate()
         const originalRequest = error.config;
         if(error.response){
             const status = error.response.status;
@@ -43,9 +42,10 @@ axiosInstance.interceptors.response.use((response) => {
                 toast.error('Access denied. Please log in.');
                 await handleLogout()
             } else if (status === 404) {
-                navigate('/404');
+               // navigate && navigate('/404');
             } else if (status === 500) {
                 toast.error('Internal server error. Please try again later.');
+                //navigate && navigate('/500');
             }
         } else {
             toast.error('Network error. Please check your connection.');  
@@ -58,8 +58,7 @@ axiosInstance.interceptors.response.use((response) => {
 
 /*................................................doctor......................................................*/
 const axiosInstanceDoctor = axios.create({
-   // baseURL:'http://localhost:5000',
-    baseURL:'http://3.110.136.162',
+    baseURL:'https://calmnest.site',
     headers:{
         'Content-Type':'application/json'
     }
@@ -69,7 +68,7 @@ axiosInstanceDoctor.interceptors.response.use((response) => {
     return response;
 },        
     async (error) => {
-        const navigate = useNavigate()
+        const navigate = getNavigate()
         const originalRequest = error.config;
         if(error.response){
             const status = error.response.status;
@@ -91,10 +90,10 @@ axiosInstanceDoctor.interceptors.response.use((response) => {
                 toast.error('Access denied. Please log in.');
                 await handleLogoutDoctor()
             } else if (status === 404) {
-                navigate('/404')
+                //navigate && navigate('/404')
             } else if (status === 500) {
                 toast.error('Internal server error. Please try again later.');
-                navigate('/500')
+               // navigate && navigate('/500')
             } else if(status===400 && error.response.data.message === 'Id is not there'){
                toast.error('Access denied. Please log in!') 
             }
@@ -108,8 +107,7 @@ axiosInstanceDoctor.interceptors.response.use((response) => {
 
 /*.............................................admin.............................................*/
 const axiosInstanceAdmin = axios.create({
-    //baseURL:'http://localhost:5000',
-    baseURL:'http://3.110.136.162',
+    baseURL:'https://calmnest.site',
     headers:{
         'Content-Type':'application/json'
     }

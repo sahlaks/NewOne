@@ -66,8 +66,8 @@ export class ParentController {
 
       const result = await this.ParentUseCase.saveUser(signupData as IParent);
       if (result.status) {
-        res.cookie("access_token", result.accesstoken, { httpOnly: true });
-        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true });
+        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
+        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
         if (result.user?.password) {
           delete (result.user as { password?: string }).password;
         }
@@ -121,8 +121,8 @@ export class ParentController {
         if (result.data?.password) {
           delete (result.data as { password?: string }).password;
         }
-        res.cookie("access_token", result.accesstoken, { httpOnly: true });
-        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true });
+        res.cookie("access_token", result.accesstoken, { httpOnly: true , secure: true});
+        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true , secure: true });
         return res.status(200).json({ success: true, data: result.data });
       } else {
         return res

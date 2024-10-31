@@ -76,9 +76,9 @@ class DoctorController {
                 }
                 const result = yield this.DoctorUseCase.saveUser(doctorData);
                 if (result.status) {
-                    res.cookie("doc_auth_token", result.token, { httpOnly: true });
+                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
                     res.cookie("doc_refresh_token", result.refreshtoken, {
-                        httpOnly: true,
+                        httpOnly: true, secure: true
                     });
                     if ((_a = result.user) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.user.password;
@@ -143,9 +143,9 @@ class DoctorController {
                     if ((_a = result.data) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.data.password;
                     }
-                    res.cookie("doc_auth_token", result.token, { httpOnly: true });
+                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
                     res.cookie("doc_refresh_token", result.refreshtoken, {
-                        httpOnly: true,
+                        httpOnly: true, secure: true
                     });
                     return res.status(200).json({ success: true, data: result.data });
                 }

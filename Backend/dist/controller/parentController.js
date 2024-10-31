@@ -70,8 +70,8 @@ class ParentController {
                 }
                 const result = yield this.ParentUseCase.saveUser(signupData);
                 if (result.status) {
-                    res.cookie("access_token", result.accesstoken, { httpOnly: true });
-                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true });
+                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
+                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
                     if ((_a = result.user) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.user.password;
                     }
@@ -125,8 +125,8 @@ class ParentController {
                     if ((_a = result.data) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.data.password;
                     }
-                    res.cookie("access_token", result.accesstoken, { httpOnly: true });
-                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true });
+                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
+                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
                     return res.status(200).json({ success: true, data: result.data });
                 }
                 else {
