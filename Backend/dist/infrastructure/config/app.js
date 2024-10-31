@@ -40,7 +40,7 @@ const createServer = () => {
             secret: 'your_secret_key',
             resave: false,
             saveUninitialized: true,
-            cookie: { secure: false },
+            cookie: { secure: true },
         }));
         app.use(express_1.default.json());
         app.use(express_1.default.urlencoded({ extended: true }));
