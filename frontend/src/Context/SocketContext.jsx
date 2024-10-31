@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState();
 
   useEffect(() => {
-    const newSocket = io('http://localhost:5000'); 
+    const newSocket = io('https://calmnest.site'); 
     setSocket(newSocket);
 
     return () => {

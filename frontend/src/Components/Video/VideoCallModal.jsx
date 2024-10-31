@@ -9,8 +9,8 @@ const VideoCallModal = ({ isOpen, onClose, user, appointment }) => {
   useEffect(() => {
     const checkMeetingTime = () => {
       const now = new Date();
-      const date = "Tue Oct 29 2024"
-      const startTime = "10:30"
+      const date = "Thu Oct 31 2024"
+      const startTime = "17:00"
       if (!appointment.startTime) {
         console.error("Meeting time is not set");
         return;
