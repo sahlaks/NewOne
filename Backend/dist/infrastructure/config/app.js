@@ -28,7 +28,7 @@ const createServer = () => {
     try {
         const app = (0, express_1.default)();
         const corsOptions = {
-            origin: 'https://calmnestonline.vercel.app/',
+            origin: 'http://localhost:3000',
             credentials: true,
             methods: 'GET,PUT,PATCH,POST,DELETE',
             allowedHeaders: 'Content-Type,Authorization',

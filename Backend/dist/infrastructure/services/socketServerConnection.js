@@ -10,7 +10,7 @@ let unreadCounts = {};
 const createSocketChatConnection = (server) => {
     const io = new socket_io_1.Server(server, {
         cors: {
-            origin: "https://calmnestonline.vercel.app/",
+            origin: "http://localhost:3000",
             credentials: true,
             methods: ["GET", "POST"],
         },
