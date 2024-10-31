@@ -24,6 +24,8 @@ export class ParentController {
         mobileNumber,
         password,
       };
+      console.log("parennt ", req.session.signupData);
+      
       const result = await this.ParentUseCase.registrationParent(req);
 
       if (result.status) {
@@ -52,7 +54,8 @@ export class ParentController {
       const { otp } = req.body;
       const sessionOtp = req.session.otp;
       const signupData = req.session.signupData;
-      console.log(sessionOtp);
+      console.log('session otp', sessionOtp);
+      console.log('signup data:', signupData);
 
       if (!signupData) {
         return res
