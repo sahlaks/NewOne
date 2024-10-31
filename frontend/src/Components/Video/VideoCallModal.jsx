@@ -16,7 +16,7 @@ const VideoCallModal = ({ isOpen, onClose, user, appointment }) => {
         return;
       }
 
-      const meetingDateObj = new Date(`${date} ${startTime}`);
+      const meetingDateObj = new Date(`${appointment.date} ${appointment.startTime}`);
       console.log('obj',meetingDateObj);
 
       const oneHourLater = new Date(meetingDateObj.getTime() + 60 * 60 * 1000);
