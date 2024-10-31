@@ -37,9 +37,11 @@ class DoctorController {
                     password,
                     document: documentUrl
                 };
+                console.log('doc', req.session.doctorData);
                 const result = yield this.DoctorUseCase.registrationDoctor(email);
                 if (result.status) {
                     req.session.dotp = result.otp;
+                    console.log('otp', req.session.dotp);
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -65,7 +67,8 @@ class DoctorController {
                 const { otp } = req.body;
                 const sessionOtp = req.session.dotp;
                 const doctorData = req.session.doctorData;
-                console.log(sessionOtp);
+                console.log('otp', sessionOtp);
+                console.log('data', doctorData);
                 if (!doctorData) {
                     return res
                         .status(400)

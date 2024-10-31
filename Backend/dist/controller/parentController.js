@@ -32,6 +32,7 @@ class ParentController {
                     mobileNumber,
                     password,
                 };
+                console.log("parennt ", req.session.signupData);
                 const result = yield this.ParentUseCase.registrationParent(req);
                 if (result.status) {
                     return res.status(200).json({
@@ -59,7 +60,8 @@ class ParentController {
                 const { otp } = req.body;
                 const sessionOtp = req.session.otp;
                 const signupData = req.session.signupData;
-                console.log(sessionOtp);
+                console.log('session otp', sessionOtp);
+                console.log('signup data:', signupData);
                 if (!signupData) {
                     return res
                         .status(400)
