@@ -365,7 +365,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction): Promise<Res
       }
 
       const newAccessToken = jwtCreation(doc._id, 'Doctor');
-      res.cookie('doc_auth_token',newAccessToken)
+      res.cookie('doc_auth_token',newAccessToken,  { httpOnly: true, secure: true })
       res.status(200).json({ success: true, message: 'Token Updated' });
   }catch(error){
       next(error)

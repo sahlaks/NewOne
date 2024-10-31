@@ -347,7 +347,7 @@ class DoctorController {
                     return res.status(400).json({ success: false, message: 'Invalid parent data, missing _id' });
                 }
                 const newAccessToken = (0, JwtCreation_1.jwtCreation)(doc._id, 'Doctor');
-                res.cookie('doc_auth_token', newAccessToken);
+                res.cookie('doc_auth_token', newAccessToken, { httpOnly: true, secure: true });
                 res.status(200).json({ success: true, message: 'Token Updated' });
             }
             catch (error) {
