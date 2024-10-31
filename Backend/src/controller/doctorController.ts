@@ -84,9 +84,9 @@ export class DoctorController {
 
       const result = await this.DoctorUseCase.saveUser(doctorData as IDoctor);
       if (result.status) {
-        res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
+        res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
         res.cookie("doc_refresh_token", result.refreshtoken, {
-          httpOnly: true, secure: true
+          httpOnly: true, secure: true, sameSite: 'none', path: '/'
         });
         if (result.user?.password) {
           delete (result.user as { password?: string }).password;
@@ -156,9 +156,9 @@ export class DoctorController {
           delete (result.data as { password?: string }).password;
         }
         
-        res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
+        res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
         res.cookie("doc_refresh_token", result.refreshtoken, {
-          httpOnly: true, secure: true
+          httpOnly: true, secure: true, sameSite: 'none', path: '/'
         });
         return res.status(200).json({ success: true, data: result.data });
       } else {
@@ -365,7 +365,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction): Promise<Res
       }
 
       const newAccessToken = jwtCreation(doc._id, 'Doctor');
-      res.cookie('doc_auth_token',newAccessToken,  { httpOnly: true, secure: true })
+      res.cookie('doc_auth_token',newAccessToken,  { httpOnly: true, secure: true, sameSite: 'none', path: '/' })
       res.status(200).json({ success: true, message: 'Token Updated' });
   }catch(error){
       next(error)

@@ -76,9 +76,9 @@ class DoctorController {
                 }
                 const result = yield this.DoctorUseCase.saveUser(doctorData);
                 if (result.status) {
-                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
+                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                     res.cookie("doc_refresh_token", result.refreshtoken, {
-                        httpOnly: true, secure: true
+                        httpOnly: true, secure: true, sameSite: 'none', path: '/'
                     });
                     if ((_a = result.user) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.user.password;
@@ -143,9 +143,9 @@ class DoctorController {
                     if ((_a = result.data) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.data.password;
                     }
-                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true });
+                    res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                     res.cookie("doc_refresh_token", result.refreshtoken, {
-                        httpOnly: true, secure: true
+                        httpOnly: true, secure: true, sameSite: 'none', path: '/'
                     });
                     return res.status(200).json({ success: true, data: result.data });
                 }
@@ -347,7 +347,7 @@ class DoctorController {
                     return res.status(400).json({ success: false, message: 'Invalid parent data, missing _id' });
                 }
                 const newAccessToken = (0, JwtCreation_1.jwtCreation)(doc._id, 'Doctor');
-                res.cookie('doc_auth_token', newAccessToken, { httpOnly: true, secure: true });
+                res.cookie('doc_auth_token', newAccessToken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                 res.status(200).json({ success: true, message: 'Token Updated' });
             }
             catch (error) {

@@ -66,8 +66,8 @@ export class ParentController {
 
       const result = await this.ParentUseCase.saveUser(signupData as IParent);
       if (result.status) {
-        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
         if (result.user?.password) {
           delete (result.user as { password?: string }).password;
         }
@@ -121,8 +121,8 @@ export class ParentController {
         if (result.data?.password) {
           delete (result.data as { password?: string }).password;
         }
-        res.cookie("access_token", result.accesstoken, { httpOnly: true , secure: true});
-        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true , secure: true });
+        res.cookie("access_token", result.accesstoken, { httpOnly: true , secure: true, sameSite: 'none', path: '/'});
+        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true , secure: true, sameSite: 'none', path: '/' });
         return res.status(200).json({ success: true, data: result.data });
       } else {
         return res
@@ -164,16 +164,16 @@ export class ParentController {
       const result = await this.ParentUseCase.findParentByEmail(user);
       if (result.status) {
         if (result.message === "User exist") {
-          res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-          res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+          res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+          res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
           return res.status(200).json({
             success: true,
             message: result.message,
             data: result.parent,
           });
         } else if (result.message === "User authenticated and added") {
-          res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-          res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+          res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+          res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
           return res.status(201).json({
             success: true,
             message: result.message,
@@ -334,7 +334,7 @@ export class ParentController {
       }
 
       const newAccessToken = jwtCreation(parent._id, 'Parent');
-      res.cookie("access_token", newAccessToken,  { httpOnly: true, secure: true });
+      res.cookie("access_token", newAccessToken,  { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
       res.status(200).json({ success: true, message: "Token Updated" });
     } catch (error) {
       next(error);

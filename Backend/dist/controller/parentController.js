@@ -70,8 +70,8 @@ class ParentController {
                 }
                 const result = yield this.ParentUseCase.saveUser(signupData);
                 if (result.status) {
-                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                     if ((_a = result.user) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.user.password;
                     }
@@ -125,8 +125,8 @@ class ParentController {
                     if ((_a = result.data) === null || _a === void 0 ? void 0 : _a.password) {
                         delete result.data.password;
                     }
-                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+                    res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+                    res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                     return res.status(200).json({ success: true, data: result.data });
                 }
                 else {
@@ -166,8 +166,8 @@ class ParentController {
                 const result = yield this.ParentUseCase.findParentByEmail(user);
                 if (result.status) {
                     if (result.message === "User exist") {
-                        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-                        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+                        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+                        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                         return res.status(200).json({
                             success: true,
                             message: result.message,
@@ -175,8 +175,8 @@ class ParentController {
                         });
                     }
                     else if (result.message === "User authenticated and added") {
-                        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true });
-                        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true });
+                        res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
+                        res.cookie("refresh_token", result.refreshtoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                         return res.status(201).json({
                             success: true,
                             message: result.message,
@@ -324,7 +324,7 @@ class ParentController {
                     });
                 }
                 const newAccessToken = (0, JwtCreation_1.jwtCreation)(parent._id, 'Parent');
-                res.cookie("access_token", newAccessToken, { httpOnly: true, secure: true });
+                res.cookie("access_token", newAccessToken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
                 res.status(200).json({ success: true, message: "Token Updated" });
             }
             catch (error) {
