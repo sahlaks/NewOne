@@ -71,10 +71,6 @@ function ConfirmAppointment() {
       }
     }
     
-    console.log(
-      "Stripe Publishable Key:",
-      process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
-    );
     const stripe = await loadStripe(
       "pk_test_51Q0LPv2NKJ47VgiTAMnrWs0aVTj0bQVTjTzmgsiX8MFEQWIOR80C1Y5lnHB9fJmMw3gSUKJoD4LsNwVpy4jw88Va00Gmhd7mO3"
     );
