@@ -19,8 +19,8 @@ export const createCheckoutSession = async (amount: number, appointmentId: strin
         },
       ],
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.CLIENT_URL!}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL!}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         appointmentId: appointmentId, 
       },
