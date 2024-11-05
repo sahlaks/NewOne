@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 export const createCheckoutSession = async (amount: number, appointmentId: string): Promise<Stripe.Checkout.Session> => {
-  console.log('CLIENT_URL:', process.env.CLIENT_URL);
+  console.log('CLIENT_URL:', process.env.NEW_URL);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -21,8 +21,8 @@ export const createCheckoutSession = async (amount: number, appointmentId: strin
         },
       ],
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL!}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL!}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEW_URL}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEW_URL}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         appointmentId: appointmentId, 
       },
