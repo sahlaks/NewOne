@@ -8,7 +8,7 @@ import { Server } from "socket.io";
 export const createSocketChatConnection = (server: any) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://new-one-pi.vercel.app/",
       credentials: true,
       methods: ["GET", "POST"],
     },
