@@ -20,12 +20,18 @@ export class ChatRepository implements IChatRepository {
     }
 
     /*...............................get messages..................................*/
-    async getMessages(sender: string, receiver: string): Promise<IChat[] | null> {
-        const res = await chatModel.find({ $or: 
-            [
-            { senderId: sender, receiverId: receiver },
-            { senderId: receiver, receiverId: sender }
+    async getMessages(sender: string, receiver: string, role: string): Promise<IChat[] | null> {
+      console.log(role);
+      const visibilityFilter = role === 'Doctor' ? {visibleToDoctor: true} : {visibleToParent: true}
+      const res = await chatModel.find({  $and: [
+        {
+            $or: [
+                { senderId: sender, receiverId: receiver },
+                { senderId: receiver, receiverId: sender }
             ]
+        },
+        visibilityFilter
+    ]
             }).sort({createdAt:1})
         if(res) return res
         return null
@@ -48,7 +54,8 @@ export class ChatRepository implements IChatRepository {
                         $or: [
                           { senderId: id}, 
                           { receiverId: id }
-                        ]
+                        ],
+                        visibleToParent: true,
                       }
                     },
                     
@@ -116,7 +123,8 @@ export class ChatRepository implements IChatRepository {
                     $or: [
                       { senderId: id}, 
                       { receiverId: id }
-                    ]
+                    ],
+                    visibleToDoctor: true,
                   }
                 },
                 
@@ -169,9 +177,40 @@ export class ChatRepository implements IChatRepository {
                     $sort: { "lastMessage.createdAt": -1 }
                   },
               ])
+              console.log(chatList);
+              
         return chatList
         } catch (error) {
           return null
         }
     }
+
+    /*...........................................delete chat.......................................*/
+async deleteChat(id: string, docId: string): Promise<boolean> {
+  const res = await chatModel.updateMany(
+    {
+      $or: [
+        { senderId: id, receiverId: docId },
+        { senderId: docId, receiverId: id }
+      ]
+    },
+    { $set: { visibleToParent: false } }
+  );
+  return res.modifiedCount > 0;
+}
+
+/*...........................................delete chat.......................................*/
+async deleteChatDoctor(id: string, pId: string): Promise<boolean> {
+  const res = await chatModel.updateMany(
+    {
+      $or: [
+        { senderId: id, receiverId: pId },
+        { senderId: pId, receiverId: id }
+      ]
+    },
+    { $set: { visibleToDoctor: false } }
+  );
+  return res.modifiedCount > 0;
+}
+
 }

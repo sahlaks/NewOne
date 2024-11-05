@@ -62,7 +62,6 @@ doctorRouter.post("/login", (req, res, next) => {
 });
 //forgot-password
 doctorRouter.post("/forgot-pwd", (req, res, next) => {
-    console.log(req.body);
     controller.forgotPassword(req, res, next);
 });
 //verifyOtp
@@ -140,6 +139,9 @@ doctorRouter.post("/savemessage", (0, tokenValidation_1.validateDoctorTokens)("D
 //chat lists
 doctorRouter.get('/chatlists', (0, tokenValidation_1.validateDoctorTokens)('Doctor'), checkBlockedStatus_1.default, (req, res, next) => {
     chatController.chatLists(req, res, next);
+});
+doctorRouter.delete('/deletechats/:id', (0, tokenValidation_1.validateDoctorTokens)('Doctor'), checkBlockedStatus_1.default, (req, res, next) => {
+    chatController.deleteDoctorChat(req, res, next);
 });
 //update to completed
 doctorRouter.put('/updateStatus/:id', (0, tokenValidation_1.validateDoctorTokens)('Doctor'), checkBlockedStatus_1.default, (req, res, next) => {

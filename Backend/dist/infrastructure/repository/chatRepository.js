@@ -32,11 +32,18 @@ class ChatRepository {
         });
     }
     /*...............................get messages..................................*/
-    getMessages(sender, receiver) {
+    getMessages(sender, receiver, role) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield chatModel_1.default.find({ $or: [
-                    { senderId: sender, receiverId: receiver },
-                    { senderId: receiver, receiverId: sender }
+            console.log(role);
+            const visibilityFilter = role === 'Doctor' ? { visibleToDoctor: true } : { visibleToParent: true };
+            const res = yield chatModel_1.default.find({ $and: [
+                    {
+                        $or: [
+                            { senderId: sender, receiverId: receiver },
+                            { senderId: receiver, receiverId: sender }
+                        ]
+                    },
+                    visibilityFilter
                 ]
             }).sort({ createdAt: 1 });
             if (res)
@@ -64,7 +71,8 @@ class ChatRepository {
                             $or: [
                                 { senderId: id },
                                 { receiverId: id }
-                            ]
+                            ],
+                            visibleToParent: true,
                         }
                     },
                     {
@@ -134,7 +142,8 @@ class ChatRepository {
                             $or: [
                                 { senderId: id },
                                 { receiverId: id }
-                            ]
+                            ],
+                            visibleToDoctor: true,
                         }
                     },
                     {
@@ -186,11 +195,36 @@ class ChatRepository {
                         $sort: { "lastMessage.createdAt": -1 }
                     },
                 ]);
+                console.log(chatList);
                 return chatList;
             }
             catch (error) {
                 return null;
             }
+        });
+    }
+    /*...........................................delete chat.......................................*/
+    deleteChat(id, docId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield chatModel_1.default.updateMany({
+                $or: [
+                    { senderId: id, receiverId: docId },
+                    { senderId: docId, receiverId: id }
+                ]
+            }, { $set: { visibleToParent: false } });
+            return res.modifiedCount > 0;
+        });
+    }
+    /*...........................................delete chat.......................................*/
+    deleteChatDoctor(id, pId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield chatModel_1.default.updateMany({
+                $or: [
+                    { senderId: id, receiverId: pId },
+                    { senderId: pId, receiverId: id }
+                ]
+            }, { $set: { visibleToDoctor: false } });
+            return res.modifiedCount > 0;
         });
     }
 }

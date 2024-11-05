@@ -18,6 +18,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
 const generatePassword_1 = require("../infrastructure/services/generatePassword");
 const mongoose_1 = __importDefault(require("mongoose"));
+const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
 class ParentUseCase {
     constructor(parentRepository, sendEmail, childRepository, doctorRepository, slotRepository) {
         this.iparentRepository = parentRepository;
@@ -30,15 +31,24 @@ class ParentUseCase {
     registrationParent(req) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const signupData = req.session.signupData;
-                const email = signupData === null || signupData === void 0 ? void 0 : signupData.email;
+                let { parentName, email, mobileNumber, password } = req.body;
                 //check user
                 const existingUser = yield this.iparentRepository.findParentByEmail(email);
                 if (existingUser) {
                     return { status: false, message: "Email already registered" };
                 }
                 const otp = (0, otpGenerator_1.generateOTP)();
-                req.session.otp = otp;
+                //Hash password
+                const salt = yield bcrypt_1.default.genSalt(10);
+                password = yield bcrypt_1.default.hash(password, salt);
+                const tempUser = new temporaryModel_1.default({
+                    parentName,
+                    email,
+                    mobileNumber,
+                    password,
+                    otp
+                });
+                yield tempUser.save();
                 const mailOptions = {
                     email,
                     subject: "Your OTP for CalmNest Signup",
@@ -61,9 +71,6 @@ class ParentUseCase {
     saveUser(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Hash the password before saving
-                const salt = yield bcrypt_1.default.genSalt(10);
-                data.password = yield bcrypt_1.default.hash(data.password, salt);
                 data.isLoggin = true;
                 const savedUser = yield this.iparentRepository.saveUserDetails(data);
                 if (savedUser) {
@@ -138,9 +145,10 @@ class ParentUseCase {
                 const otp = (0, otpGenerator_1.generateOTP)();
                 const mailOptions = {
                     email,
-                    subject: "Your OTP for CalmNest",
+                    subject: "Your Resend OTP for CalmNest",
                     code: otp,
                 };
+                yield temporaryModel_1.default.findOneAndUpdate({ email: email }, { $set: { otp: otp } }, { new: true, upsert: false });
                 yield this.sendEmail.sendEmail(mailOptions);
                 return { status: true, message: "OTP sent successfully", otp };
             }
@@ -157,6 +165,11 @@ class ParentUseCase {
                 const user = yield this.iparentRepository.findParentByEmail(email);
                 if (user) {
                     const otp = (0, otpGenerator_1.generateOTP)();
+                    const tempUser = new temporaryModel_1.default({
+                        email: email,
+                        otp: otp
+                    });
+                    yield tempUser.save();
                     const mailOptions = {
                         email,
                         subject: "Your OTP for changing password",
@@ -444,6 +457,20 @@ class ParentUseCase {
             }
             catch (error) {
                 return { status: false, message: "An error occured during fetching" };
+            }
+        });
+    }
+    /*.......................................clear notifications............................................*/
+    clearAllNotifications(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield this.iparentRepository.clearAll(id);
+                if (res.success)
+                    return { status: true, message: res.message };
+                return { status: false };
+            }
+            catch (error) {
+                return { status: false };
             }
         });
     }

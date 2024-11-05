@@ -21,6 +21,7 @@ export interface IParentRepository {
     countDocuments(): Promise<number>
     updateParentwithPayment(appointmentId: string, parentId: string): Promise<boolean>
     getNotifications(id: string): Promise<INotification[] | null>
+    clearAll(id: string): Promise<{success: boolean, message: string}>
     makeRead(id: string): Promise<boolean>
     saveData(feedbackData: Partial<IFeedback>): Promise<boolean>
     submitReview(reviewData: Partial<IReview>): Promise<boolean>

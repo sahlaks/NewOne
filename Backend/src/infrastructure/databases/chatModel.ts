@@ -7,7 +7,11 @@ const chatSchema: Schema<IChat> = new mongoose.Schema({
     receiverId: {type: String},
     message: {type: String},
     read: {type: Boolean,
-        default: false}
+        default: false},
+    visibleToParent: {type: Boolean,
+        default: true},
+    visibleToDoctor: {type: Boolean,
+        default: true}
     },
 { timestamps: true }
 )

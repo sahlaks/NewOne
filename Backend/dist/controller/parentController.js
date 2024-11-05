@@ -17,6 +17,7 @@ const tokenVerification_1 = require("../infrastructure/services/tokenVerificatio
 const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
 const cloudinaryService_1 = require("../infrastructure/services/cloudinaryService");
 const mongoose_1 = __importDefault(require("mongoose"));
+const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
 class ParentController {
     constructor(ParentUseCase) {
         this.ParentUseCase = ParentUseCase;
@@ -25,14 +26,6 @@ class ParentController {
     createParent(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { parentName, email, mobileNumber, password } = req.body;
-                req.session.signupData = {
-                    parentName,
-                    email,
-                    mobileNumber,
-                    password,
-                };
-                console.log("parennt ", req.session.signupData);
                 const result = yield this.ParentUseCase.registrationParent(req);
                 if (result.status) {
                     return res.status(200).json({
@@ -57,19 +50,18 @@ class ParentController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const { otp } = req.body;
-                const sessionOtp = req.session.otp;
-                const signupData = req.session.signupData;
-                console.log('session otp', sessionOtp);
-                console.log('signup data:', signupData);
-                if (!signupData) {
-                    return res
-                        .status(400)
-                        .json({ success: false, message: "No signup data found" });
-                }
-                if (otp !== sessionOtp) {
+                const { otp, email } = req.body;
+                const tempUser = yield temporaryModel_1.default.findOne({ email });
+                if (otp !== (tempUser === null || tempUser === void 0 ? void 0 : tempUser.otp)) {
                     return res.json({ success: false, message: "Incorrect OTP" });
                 }
+                const signupData = {
+                    parentName: tempUser === null || tempUser === void 0 ? void 0 : tempUser.parentName,
+                    email: tempUser === null || tempUser === void 0 ? void 0 : tempUser.email,
+                    mobileNumber: tempUser === null || tempUser === void 0 ? void 0 : tempUser.mobileNumber,
+                    password: tempUser === null || tempUser === void 0 ? void 0 : tempUser.password,
+                };
+                console.log(signupData, '  new');
                 const result = yield this.ParentUseCase.saveUser(signupData);
                 if (result.status) {
                     res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
@@ -93,12 +85,10 @@ class ParentController {
     /*...........................................resend otp..........................................*/
     resendOtp(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             try {
-                const email = (_a = req.session.signupData) === null || _a === void 0 ? void 0 : _a.email;
+                const { email } = req.body;
                 const result = yield this.ParentUseCase.sendOtp(email);
                 if (result.status) {
-                    req.session.otp = result.otp;
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -201,8 +191,6 @@ class ParentController {
                 const { email } = req.body;
                 const result = yield this.ParentUseCase.verifyEmail(email);
                 if (result.status) {
-                    req.session.pEmail = email;
-                    req.session.otp = result.otp;
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email, change password",
@@ -224,9 +212,9 @@ class ParentController {
     verifyForgotPassword(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { otp } = req.body;
-                const sessionOtp = req.session.otp;
-                if (otp !== sessionOtp) {
+                const { otp, email } = req.body;
+                const tempUser = yield temporaryModel_1.default.findOne({ email });
+                if (otp !== (tempUser === null || tempUser === void 0 ? void 0 : tempUser.otp)) {
                     return res.json({ success: false, message: "Incorrect OTP" });
                 }
                 else {
@@ -244,16 +232,15 @@ class ParentController {
     /*.................................resend otp in forgot password...............................*/
     resendforForgotPassword(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const email = req.session.pEmail;
+            const { email } = req.body;
             if (!email) {
                 return res
                     .status(400)
-                    .json({ success: false, message: "No email found in session." });
+                    .json({ success: false, message: "Email not found ." });
             }
             try {
                 const result = yield this.ParentUseCase.sendOtp(email);
                 if (result.status) {
-                    req.session.otp = result.otp;
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -275,15 +262,16 @@ class ParentController {
     passwordSaver(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { password } = req.body;
-                const email = req.session.pEmail;
+                const { userDetails, email } = req.body;
+                const { password, confirmPassword } = userDetails;
                 if (!email) {
                     return res
                         .status(400)
-                        .json({ success: false, message: "No email found in session." });
+                        .json({ success: false, message: "No email found" });
                 }
                 const result = yield this.ParentUseCase.savePassword(email, password);
                 if (result.status) {
+                    yield temporaryModel_1.default.findOneAndDelete({ email });
                     return res.status(200).json({ success: true, message: result.message });
                 }
                 else {
@@ -528,6 +516,22 @@ class ParentController {
                 if (result.status)
                     return res.status(200).json({ success: true, message: result.message, data: result.data });
                 return res.status(400).json({ success: false, message: result.message });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    /*...............................................clear.........................................*/
+    clearNotifications(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const parentId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            try {
+                const result = yield this.ParentUseCase.clearAllNotifications(parentId);
+                if (result.status)
+                    return res.status(200).json({ success: true, message: result.message });
+                return res.status(400).json({ success: false });
             }
             catch (error) {
                 next(error);

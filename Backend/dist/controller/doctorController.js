@@ -8,11 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorController = void 0;
 const cloudinaryService_1 = require("../infrastructure/services/cloudinaryService");
 const tokenVerification_1 = require("../infrastructure/services/tokenVerification");
 const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
+const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
 class DoctorController {
     constructor(DoctorUseCase) {
         this.DoctorUseCase = DoctorUseCase;
@@ -30,18 +34,8 @@ class DoctorController {
                     });
                 }
                 const documentUrl = `uploads/${file.filename}`;
-                req.session.doctorData = {
-                    doctorName,
-                    email,
-                    mobileNumber,
-                    password,
-                    document: documentUrl
-                };
-                console.log('doc', req.session.doctorData);
-                const result = yield this.DoctorUseCase.registrationDoctor(email);
+                const result = yield this.DoctorUseCase.registrationDoctor(doctorName, email, mobileNumber, password, documentUrl);
                 if (result.status) {
-                    req.session.dotp = result.otp;
-                    console.log('otp', req.session.dotp);
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -64,19 +58,19 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const { otp } = req.body;
-                const sessionOtp = req.session.dotp;
-                const doctorData = req.session.doctorData;
-                console.log('otp', sessionOtp);
-                console.log('data', doctorData);
-                if (!doctorData) {
-                    return res
-                        .status(400)
-                        .json({ success: false, message: "No signup data found" });
-                }
-                if (otp !== sessionOtp) {
+                const { otp, email } = req.body;
+                console.log(otp, email);
+                const tempUser = yield temporaryModel_1.default.findOne({ email });
+                if (otp !== (tempUser === null || tempUser === void 0 ? void 0 : tempUser.otp)) {
                     return res.json({ success: false, message: "Incorrect OTP" });
                 }
+                const doctorData = {
+                    doctorName: tempUser === null || tempUser === void 0 ? void 0 : tempUser.doctorName,
+                    email: tempUser === null || tempUser === void 0 ? void 0 : tempUser.email,
+                    mobileNumber: tempUser === null || tempUser === void 0 ? void 0 : tempUser.mobileNumber,
+                    password: tempUser === null || tempUser === void 0 ? void 0 : tempUser.password,
+                    document: tempUser === null || tempUser === void 0 ? void 0 : tempUser.document
+                };
                 const result = yield this.DoctorUseCase.saveUser(doctorData);
                 if (result.status) {
                     res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
@@ -105,19 +99,10 @@ class DoctorController {
     /*...........................................resend otp..........................................*/
     resendOtp(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
             try {
-                const email = (_a = req.session.doctorData) === null || _a === void 0 ? void 0 : _a.email;
-                if (!email) {
-                    console.error("Email is missing in doctorData:", req.session.doctorData);
-                    return res.status(400).json({
-                        success: false,
-                        message: "Email is missing in session",
-                    });
-                }
+                const { email } = req.body;
                 const result = yield this.DoctorUseCase.sendOtp(email);
                 if (result.status) {
-                    req.session.dotp = result.otp;
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -173,8 +158,6 @@ class DoctorController {
                 const { email } = req.body;
                 const result = yield this.DoctorUseCase.verifyEmail(email);
                 if (result.status) {
-                    req.session.dEmail = email;
-                    req.session.dotp = result.otp;
                     return res
                         .status(200)
                         .json({
@@ -201,9 +184,9 @@ class DoctorController {
     verifyforForgotPassword(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { otp } = req.body;
-                const sessionOtp = req.session.dotp;
-                if (otp !== sessionOtp) {
+                const { otp, email } = req.body;
+                const tempUser = yield temporaryModel_1.default.findOne({ email });
+                if (otp !== (tempUser === null || tempUser === void 0 ? void 0 : tempUser.otp)) {
                     return res.json({ success: false, message: "Incorrect OTP" });
                 }
                 else {
@@ -225,16 +208,15 @@ class DoctorController {
     /*.....................................resend otp in forgot password...............................*/
     resendforForgotPassword(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const email = req.session.dEmail;
+            const { email } = req.body;
             if (!email) {
                 return res
                     .status(400)
-                    .json({ success: false, message: "No email found in session." });
+                    .json({ success: false, message: "Email not found." });
             }
             try {
                 const result = yield this.DoctorUseCase.sendOtp(email);
                 if (result.status) {
-                    req.session.dotp = result.otp;
                     return res.status(200).json({
                         success: true,
                         message: "OTP send to your email",
@@ -256,8 +238,8 @@ class DoctorController {
     passwordSaver(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { password } = req.body;
-                const email = req.session.dEmail;
+                const { userDetails, email } = req.body;
+                const { password, confirmPassword } = userDetails;
                 if (!email) {
                     return res
                         .status(400)
@@ -265,6 +247,7 @@ class DoctorController {
                 }
                 const result = yield this.DoctorUseCase.savePassword(email, password);
                 if (result.status) {
+                    yield temporaryModel_1.default.findOneAndDelete({ email });
                     return res.status(200).json({ success: true, message: result.message });
                 }
                 else {

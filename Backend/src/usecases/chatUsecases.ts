@@ -24,8 +24,8 @@ export class ChatUseCase {
     }
 
     /*................................fetch messages using ids....................................*/
-    async fetchMessagesUsingId(sender: string,receiver: string): Promise<{status: boolean; data?: IChat[]}>{
-        const res = await this.ichatRepository.getMessages(sender,receiver)
+    async fetchMessagesUsingId(sender: string,receiver: string, role: string): Promise<{status: boolean; data?: IChat[]}>{
+        const res = await this.ichatRepository.getMessages(sender,receiver,role)
         if(res) return {status: true, data:res}
         else return {status:false}
     }
@@ -46,5 +46,18 @@ export class ChatUseCase {
             res = await this.ichatRepository.findDoctorChats(id)
         if(res) return {status: true, data: res}
         else return {status:false}
+    }
+
+    /*...............................................delete chats.....................................*/
+    async deleteChats(id: string, doctorId: string): Promise<{status: boolean}>{
+        const res = await this.ichatRepository.deleteChat(id,doctorId)
+        if(res) return { status:true}
+        return {status: false}
+    }
+
+    async deleteDoctorChats(id: string, parentId: string): Promise<{status: boolean}>{
+        const res = await this.ichatRepository.deleteChatDoctor(id,parentId)
+        if(res) return { status:true}
+        return {status: false}
     }
 }

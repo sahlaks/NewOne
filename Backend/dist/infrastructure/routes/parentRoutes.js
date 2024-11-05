@@ -76,7 +76,6 @@ parentRouter.post("/forgot-pwd", (req, res, next) => {
 });
 //verifyOtp
 parentRouter.post("/verifyOtp", (req, res, next) => {
-    console.log(req.body);
     controller.verifyForgotPassword(req, res, next);
 });
 //resendOtp
@@ -139,6 +138,9 @@ parentRouter.get("/getappointments", (0, tokenValidation_1.validateTokens)("Pare
 parentRouter.get("/notifications/:id", (0, tokenValidation_1.validateTokens)("Parent"), checkBlockedStatus_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     controller.getNotifications(req, res, next);
 }));
+parentRouter.get("/clearNotifications", (0, tokenValidation_1.validateTokens)("Parent"), checkBlockedStatus_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    controller.clearNotifications(req, res, next);
+}));
 //notification-read
 parentRouter.post("/mark-notification-read", (0, tokenValidation_1.validateTokens)("Parent"), checkBlockedStatus_1.default, (req, res, next) => {
     controller.changeToRead(req, res, next);
@@ -158,6 +160,10 @@ parentRouter.get("/fetchmessages", (0, tokenValidation_1.validateTokens)("Parent
 //save message
 parentRouter.post("/savemessage", (0, tokenValidation_1.validateTokens)("Parent"), checkBlockedStatus_1.default, (req, res, next) => {
     chatController.saveMessage(req, res, next);
+});
+//delete chat
+parentRouter.delete("/deletechat/:id", (0, tokenValidation_1.validateTokens)('Parent'), checkBlockedStatus_1.default, (req, res, next) => {
+    chatController.deleteChat(req, res, next);
 });
 //chat lists
 parentRouter.get('/chatlists', (0, tokenValidation_1.validateTokens)('Parent'), checkBlockedStatus_1.default, (req, res, next) => {

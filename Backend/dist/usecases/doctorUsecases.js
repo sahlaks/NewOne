@@ -16,6 +16,7 @@ exports.DoctorUseCase = void 0;
 const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
 const otpGenerator_1 = require("../infrastructure/services/otpGenerator");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
 class DoctorUseCase {
     constructor(doctorRepository, sendEmail, slotRepository) {
         this.idoctorRepository = doctorRepository;
@@ -23,7 +24,7 @@ class DoctorUseCase {
         this.islotRepository = slotRepository;
     }
     /*............................check email registered or not, then send otp............................*/
-    registrationDoctor(email) {
+    registrationDoctor(doctorName, email, mobileNumber, password, document) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Check if the user already exists
@@ -33,6 +34,18 @@ class DoctorUseCase {
                 }
                 // Generate and store OTP securely
                 const otp = (0, otpGenerator_1.generateOTP)();
+                const salt = yield bcrypt_1.default.genSalt(10);
+                password = yield bcrypt_1.default.hash(password, salt);
+                const tempUser = new temporaryModel_1.default({
+                    doctorName,
+                    email,
+                    mobileNumber,
+                    password,
+                    document,
+                    otp
+                });
+                yield tempUser.save();
+                console.log('user', tempUser);
                 // Send email with OTP
                 const mailOptions = {
                     email,
@@ -56,9 +69,6 @@ class DoctorUseCase {
     saveUser(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Hash the password before saving
-                const salt = yield bcrypt_1.default.genSalt(10);
-                data.password = yield bcrypt_1.default.hash(data.password, salt);
                 const savedUser = yield this.idoctorRepository.saveUserDetails(data);
                 if (savedUser) {
                     const token = (0, JwtCreation_1.jwtCreation)(savedUser._id, 'Doctor');
@@ -94,6 +104,7 @@ class DoctorUseCase {
                     subject: "Your OTP for CalmNest Doctor Signup",
                     code: otp,
                 };
+                yield temporaryModel_1.default.findOneAndUpdate({ email: email }, { $set: { otp: otp } }, { new: true, upsert: false });
                 yield this.sendEmail.sendEmail(mailOptions);
                 return { status: true, message: "OTP sent successfully", otp };
             }
@@ -161,6 +172,11 @@ class DoctorUseCase {
                 const user = yield this.idoctorRepository.findDoctorByEmail(email);
                 if (user) {
                     const otp = (0, otpGenerator_1.generateOTP)();
+                    const tempUser = new temporaryModel_1.default({
+                        email: email,
+                        otp: otp
+                    });
+                    yield tempUser.save();
                     const mailOptions = {
                         email,
                         subject: "Your OTP for changing password",

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../Public/calmnestcrop.png';
-import { AppBar, Toolbar, IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Badge } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Badge, Button } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch, useSelector } from 'react-redux';
 import { axiosInstance } from '../../Services/AxiosConfig';
 import { parentLogout } from '../../Redux/Slice/authSlice';
-import { changeToRead, getNotifications } from '../../utils/parentFunctions';
+import { changeToRead, clearNotification, getNotifications } from '../../utils/parentFunctions';
 import NotificationList from '../Notifications/Notifications';
 import { useNotification } from '../../Context/NotificationContext';
 
@@ -88,6 +88,15 @@ function ParentHeader() {
     setOpenNotificationsModal(false);
   };
 
+  const clearAllNotifications = async () => {
+    const res= await clearNotification()
+    if(res.success){
+      setNotifications([]); 
+      setUnreadCount(0); 
+      
+    }
+  };
+
   const linkStyle = { color: '#323232', textDecoration: 'none' };
 
   const navItems = [
@@ -102,7 +111,7 @@ function ParentHeader() {
 
   return (
     <div>
-      <AppBar position="fixed" style={{ backgroundColor: '#FAF5E9', borderRadius: '5px' , zIndex: 1000}}>
+      <AppBar position="fixed" style={{ backgroundColor: '#E3D7CD', borderRadius: '5px' , zIndex: 1000}}>
         <Toolbar style={{ justifyContent: 'space-between' }}>
           {/* Logo Section */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -168,7 +177,12 @@ function ParentHeader() {
 
       {/* Notification Modal */}
       <Dialog open={openNotificationsModal} onClose={handleNotificationsClose} fullWidth maxWidth="sm">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginRight:'20px' }}>
         <DialogTitle className='text-2xl font-bold'>Notifications</DialogTitle>
+            <Button onClick={clearAllNotifications} style={{ color: 'red', borderColor: 'red' }} variant="outlined">
+              Clear All
+            </Button>
+          </div>
         <DialogContent>
           <List>
             {notifications.length > 0 ? (

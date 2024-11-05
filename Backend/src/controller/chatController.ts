@@ -3,6 +3,7 @@ import { AuthRequest } from "../domain/entity/types/auth";
 import { ChatUseCase } from "../usecases/chatUsecases";
 import { error } from "console";
 import IChat from "../domain/entity/chat";
+import { read } from "fs";
 
 export class ChatController {
     constructor( private ChatUsecase: ChatUseCase) {}
@@ -35,9 +36,10 @@ export class ChatController {
     /*..............................................fetch messages of a doctor.............................*/
     async fetchMessages(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
         const senderId = req.user?.id as string
+        const role = req.user?.role as string
         const receiverID = req.query.id as string
         try{
-            const messages = await this.ChatUsecase.fetchMessagesUsingId(senderId,receiverID)
+            const messages = await this.ChatUsecase.fetchMessagesUsingId(senderId,receiverID,role)
             if(messages.status) return res.status(200).json({success: true, data: messages.data})
             return res.status(400).json({success: false})
         } catch(err){
@@ -71,7 +73,33 @@ export class ChatController {
         try{
             const chats = await this.ChatUsecase.fetchChatLists(userId, role)
             if(chats.status) return res.status(200).json({success: true, data: chats.data})
-                return res.status(400).json({success: false})
+            return res.status(400).json({success: false})
+        } catch(err){
+            next(err)
+        }
+    }
+
+    /*.....................................delete chat.......................................*/
+    async deleteChat(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+        const userId = req.user?.id as string
+        const doctorId = req.params.id as string
+        try{
+            const result = await this.ChatUsecase.deleteChats(userId,doctorId)
+            if(result.status) return res.status(200).json({success: true, message: 'Chat deleted Successfully!'})
+            return res.status(400).json({success: false})
+        } catch(err){
+            next(err)
+        }
+    }
+    
+    /*.....................................delete chat.......................................*/
+    async deleteDoctorChat(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+        const userId = req.user?.id as string
+        const parentId = req.params.id as string
+        try{
+            const result = await this.ChatUsecase.deleteDoctorChats(userId,parentId)
+            if(result.status) return res.status(200).json({success: true, message: 'Chat deleted Successfully!'})
+            return res.status(400).json({success: false})
         } catch(err){
             next(err)
         }

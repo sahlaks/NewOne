@@ -35,9 +35,9 @@ class ChatUseCase {
         });
     }
     /*................................fetch messages using ids....................................*/
-    fetchMessagesUsingId(sender, receiver) {
+    fetchMessagesUsingId(sender, receiver, role) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield this.ichatRepository.getMessages(sender, receiver);
+            const res = yield this.ichatRepository.getMessages(sender, receiver, role);
             if (res)
                 return { status: true, data: res };
             else
@@ -66,6 +66,23 @@ class ChatUseCase {
                 return { status: true, data: res };
             else
                 return { status: false };
+        });
+    }
+    /*...............................................delete chats.....................................*/
+    deleteChats(id, doctorId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield this.ichatRepository.deleteChat(id, doctorId);
+            if (res)
+                return { status: true };
+            return { status: false };
+        });
+    }
+    deleteDoctorChats(id, parentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield this.ichatRepository.deleteChatDoctor(id, parentId);
+            if (res)
+                return { status: true };
+            return { status: false };
         });
     }
 }

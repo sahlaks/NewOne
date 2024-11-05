@@ -26,9 +26,9 @@ function DForgotPassword() {
     if(validate()){
       try {
         const response = await axiosInstanceDoctor.post('/api/doctor/forgot-pwd',{ email },{ withCredentials:true });
-        console.log('doctor response',response);
           if(response.data.success){
             const changePassword = response.data.changePassword
+            localStorage.setItem('forgotpwd',email)
             setEmail('');
             navigate('/d-otp', {state: {changePassword}});
           } else{

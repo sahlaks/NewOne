@@ -173,6 +173,12 @@ export const getNotifications = async (userId) =>{
 }
 }
 
+/*........................................clear notification................................*/
+export const clearNotification = async () => {
+  const res = await axiosInstance.get(`/api/parents/clearNotifications`,{withCredentials: true});
+  return res.data;
+}
+
 /*.....................................read or unread.........................................*/
 export const changeToRead = async (notificationId) => {
   await axiosInstance.post('/api/parents/mark-notification-read', { notificationId }, {withCredentials: true});
@@ -232,5 +238,11 @@ export const submitReview = async (feedback,id,name) => {
 /*.......................................prescription.......................................*/
 export const fetchPrescription = async (id) => {
   const res = await axiosInstance.get(`/api/parents/prescription/${id}`, {withCredentials: true})
+  return res.data
+}
+
+/*......................................delete chat...........................................*/
+export const deleteChat = async (id) => {
+  const res = await axiosInstance.delete(`/api/parents/deletechat/${id}`,{withCredentials: true})
   return res.data
 }

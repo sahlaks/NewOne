@@ -10,17 +10,17 @@ import { useNavigate } from "react-router-dom";
 const Patients = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const fetchPatients = async (page = 1, limit = 6) => {
     try {
       setLoading(true);
       const response = await getPatients(page, limit);
       setPatients(response.data);
+      console.log(response);
+      
       setTotalPages(response.totalPages);
       setCurrentPage(response.currentPage);
       setLoading(false);
@@ -38,8 +38,8 @@ const Patients = () => {
   }, []);
 
   const viewMedicalHistory = (patient) => {
-  navigate('/history', { state: { patient } })
-  }
+    navigate('/history', { state: { patient } });
+  };
 
   return (
     <>
@@ -47,78 +47,62 @@ const Patients = () => {
       {loading ? (
         <Loading />
       ) : (
-        <div>
-          <h1 className="text-2xl font-bold mb-5 text-center mt-20">
-            All Patients
-          </h1>
+        <div className="flex flex-col items-center justify-center mt-20 mb-10">
+          <h1 className="text-3xl font-bold mb-5">All Patients</h1>
 
-          {/* Centered table container */}
-          <div className="flex justify-center items-center">
-            <div className="w-full lg:w-2/3 mx-auto">
-              {patients.length === 0 ? (
-                <p className="text-center text-xl font-bold">
-                  No patients found!
-                </p>
-              ) : (
-                <table className="table-auto border-collapse border border-gray-300 w-full bg-[#DDD0C8]">
-                  <thead>
-                    <tr className="border-b border-gray-300 bg-white">
-                      <th className="border-r border-gray-300 px-4 py-2 text-center">
-                        Image
-                      </th>
-                      <th className="border-r border-gray-300 px-4 py-2 text-center">
-                        Child Name
-                      </th>
-                      <th className="border-r border-gray-300 px-4 py-2 text-center">
-                        Parent Name
-                      </th>
-                      <th className="border-r border-gray-300 px-4 py-2 text-center">
-                        Email
-                      </th>
-
-                      <th className="border-r border-gray-300 px-4 py-2 text-center">
-                        Actions
-                      </th>
+          <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md overflow-hidden">
+            {patients.length === 0 ? (
+              <p className="text-center text-xl font-semibold p-8">
+                No patients found!
+              </p>
+            ) : (
+              <table className="table-auto border-collapse w-full">
+                <thead>
+                  <tr className="bg-[#D3C5B7] text-gray-800">
+                    <th className="px-4 py-2 border">Image</th>
+                    <th className="px-4 py-2 border">Child Name</th>
+                    <th className="px-4 py-2 border">Parent Name</th>
+                    <th className="px-4 py-2 border">Email</th>
+                    <th className="px-4 py-2 border">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patients.map((patient, index) => (
+                    <tr
+                      key={index}
+                      className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${
+                        index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'
+                      }`}
+                    >
+                      <td className="border px-4 py-2 text-center">
+                        <img
+                          src={patient.parentDetails.image}
+                          alt="Parent"
+                          className="w-8 h-8 rounded-full mx-auto"
+                        />
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        {patient.childInfo.name}
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        {patient.parentDetails.parentName}
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        {patient.parentDetails.email}
+                      </td>
+                      <td className="border px-4 py-2 text-center">
+                        <button
+                          onClick={() => viewMedicalHistory(patient)}
+                          className="text-blue-500 hover:underline"
+                        >
+                          Medical History
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {patients.map((patient, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-black-300 text-center"
-                      >
-                        <td className="border-r border-black-300 px-4 py-2">
-                          <img
-                            src={patient.parentDetails.image}
-                            alt="Parent"
-                            className="w-8 h-8 rounded-full mx-auto"
-                          />
-                        </td>
-                        <td className="border-r border-black-300 px-4 py-2">
-                          {patient.childInfo.name}
-                        </td>
-                        <td className="border-r border-black-300 px-4 py-2">
-                          {patient.parentDetails.parentName}
-                        </td>
-                        <td className="border-r border-black-300 px-4 py-2">
-                          {patient.parentDetails.email}
-                        </td>
-
-                        <td className="border-r border-black-300 px-4 py-2 text-green-600 underline">
-                          <button
-                            onClick={() =>
-                              viewMedicalHistory(patient)
-                            }
-                          >
-                            Medical History
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       )}

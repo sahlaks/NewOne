@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Loading from "../../../Components/Loading/Loading";
 import HeaderSwitcher from "../../../Components/Header/HeadSwitcher";
 import "./DoctorLists.css";
@@ -88,33 +87,34 @@ function DoctorLists() {
   };
 
   return (
-    <div>
-      <div className="min-h-screen p-6 flex flex-col items-center justify-center">
-        <HeaderSwitcher />
-        {loading ? (
-          <Loading />
-        ) : (
-          <div className="mt-5">
-            <div className="flex justify-center space-x-4 mb-5">
+    <div className="bg-[#FAF5E9] min-h-screen p-6 flex flex-col items-center">
+      <HeaderSwitcher />
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className="mt-5 w-full max-w-4xl">
+          <div className="flex justify-between items-center mb-5">
+            <h2 className="text-2xl font-semibold">Doctor Listings</h2>
+            <div className="flex space-x-4">
               <input
                 type="text"
                 placeholder="Search by doctor's name"
-                className="search-input px-4 py-2 border rounded-lg w-64"
+                className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <select
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
               >
                 <option value="">Specializations</option>
                 <option value="MD">MD</option>
-                <option value="School Counceling">School Counseling</option>
+                <option value="School Counseling">School Counseling</option>
                 <option value="Play Therapy">Play Therapy</option>
               </select>
               <select
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 value={minRating}
                 onChange={(e) => setMinRating(e.target.value)}
               >
@@ -126,35 +126,35 @@ function DoctorLists() {
                 <option value="5">5 Stars</option>
               </select>
             </div>
-
-            <div className="doctor-list">
-              {doctors.map((doctor) => (
-                <div key={doctor._id} className="doctor-card">
-                  <img
-                    src={doctor.image || defaultImage}
-                    alt={doctor.doctorName}
-                    className="doctor-image"
-                  />
-                  <h3 className="text-xl font-bold">Dr. {doctor.doctorName}</h3>
-                  <h3 className="text-lg">{doctor.specialization}</h3>
-                  <div>{renderStars(doctor.averageRating)}</div>
-                  <button
-                    className="appointment-btn"
-                    onClick={() => handleViewProfile(doctor._id)}
-                  >
-                    View Profile
-                  </button>
-                </div>
-              ))}
-            </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pagination.totalPages || 1}
-              onPageChange={handlePageChange}
-            />
           </div>
-        )}
-      </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {doctors.map((doctor) => (
+              <div key={doctor._id} className="doctor-card border rounded-lg shadow-lg p-4 transition-transform transform hover:scale-105 bg-white">
+                <img
+                  src={doctor.image || defaultImage}
+                  alt={doctor.doctorName}
+                  className="doctor-image w-full h-32 object-cover rounded-lg mb-2"
+                />
+                <h3 className="text-xl font-bold">Dr. {doctor.doctorName}</h3>
+                <h4 className="text-lg text-gray-600">{doctor.specialization}</h4>
+                <div className="flex my-1">{renderStars(doctor.averageRating)}</div>
+                <button
+                  className="appointment-btn bg-[#323232] text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors"
+                  onClick={() => handleViewProfile(doctor._id)}
+                >
+                  View Profile
+                </button>
+              </div>
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pagination.totalPages || 1}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
       <Footer />
     </div>
   );

@@ -13,8 +13,6 @@ const ParentAppointmentDetails = () => {
   const { state } = useLocation();
   const { appointment } = state || {};
 
-  console.log(appointment);
-
   const getStatusColor = (status) => {
     switch (status) {
       case "Completed":
@@ -45,22 +43,17 @@ const ParentAppointmentDetails = () => {
     fetchPrescriptionData();
   }, [appointment]);
 
-    // Function to download the prescription as PDF
   const downloadPrescription = () => {
     const doc = new jsPDF();
     let lineY = 20;
 
-    // Title Section
     doc.setFontSize(18);
     doc.setTextColor(33, 150, 243);
     doc.text("CalmNest Medical Prescription", 20, lineY);
     lineY += 10;
-
-    // Divider line
     doc.setDrawColor(100, 149, 237);
     doc.line(20, lineY += 10, 190, lineY);
 
-    // Doctor and Patient Information in the Same Row
     lineY += 10;
     doc.setFontSize(14);
     doc.setTextColor(76, 175, 80);
@@ -77,9 +70,8 @@ const ParentAppointmentDetails = () => {
     doc.text(`Child Name: ${appointment.name}`, 120, lineY);
     lineY += 6;
     doc.text(`Age: ${appointment.age}`, 120, lineY);
-    doc.text(`Gender: ${appointment.gender}`, 120, lineY+5);
+    doc.text(`Gender: ${appointment.gender}`, 120, lineY + 5);
 
-    // Prescription Information Section
     lineY += 20;
     doc.setFontSize(14);
     doc.setTextColor(156, 39, 176);
@@ -89,7 +81,6 @@ const ParentAppointmentDetails = () => {
     lineY += 8;
     doc.text(`Prescription ID: ${appointment._id}`, 20, lineY);
 
-    // Medications Section
     lineY += 20;
     doc.setFontSize(14);
     doc.setTextColor(244, 67, 54);
@@ -100,7 +91,6 @@ const ParentAppointmentDetails = () => {
       doc.text(`${index + 1}. ${rec.text}`, 20, lineY += 10);
     });
 
-    // Final Divider line and Save
     doc.setDrawColor(100, 149, 237);
     doc.line(20, lineY += 15, 190, lineY);
 
@@ -115,69 +105,52 @@ const ParentAppointmentDetails = () => {
     doc.save("Prescription.pdf");
   };
 
-
   return (
     <>
       <ParentHeader />
       {loading ? (
         <Loading />
       ) : (
-        <div className="appointment-details-container">
-          <div className="header">
-            <h1 className="text-3xl font-bold text-black">
-              Appointment Details
-            </h1>
-          </div>
+        <div className="bg-[#FAF5E9] min-h-screen flex flex-col items-center pt-16 px-4">
+          <h1 className="text-3xl font-semibold text-center mb-8">Appointment Details</h1>
 
-          <div className="details">
-            <div className="appointment-info">
-              <h2 className="text-xl font-bold">Appointment Details</h2>
-              <p>
-                {appointment.date}, Starting Time: {appointment.startTime}
+          <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md p-6 mb-10">
+            <h2 className="text-2xl font-semibold text-[#323232] mb-4">Appointment Overview</h2>
+            <div className="flex justify-between mb-4">
+              <p>Date: {appointment.date}</p>
+              <p>Start Time: {appointment.startTime}</p>
+              <p className={`${getStatusColor(appointment.appointmentStatus)} font-semibold`}>
+                Status: {appointment.appointmentStatus}
               </p>
-              <p>Video Consulting</p>
-              <div className="actions flex items-center space-x-4">
-                <p
-                  className={`font-semibold ${getStatusColor(appointment.appointmentStatus)}`}
-                >
-                  {appointment.appointmentStatus}
-                </p>
-              </div>
-              <h2 className="text-xl font-bold mt-5">Patient Information</h2>
-              <div className="doctor-details">
-                <p>Parent Name: {appointment.parentName}</p>
-                <p>Child Name: {appointment.name}</p>
-                <p>Age: {appointment.age}</p>
-                <p>Gender: {appointment.gender}</p>
-              </div>
-              <h2 className="text-xl font-bold mt-5">Doctor Information</h2>
-              <div className="doctor-details">
-                <p>Doctor Name: {appointment.doctorName}</p>
-              </div>
-
-              <h2 className="text-xl font-bold mt-5">
-                Appointment Information
-              </h2>
-              <p>Fee: {appointment.fees}</p>
-              <p>Payment Status: {appointment.paymentStatus}</p>
             </div>
-
-            {appointment.prescription && prescriptions.length > 0 ? (
-              <div className="prescription-info">
-                <h2 className="text-xl font-bold mb-5">Prescription</h2>
-                {prescriptions.map((rec, index) => (
-                  <p key={rec.id}>
-                    {index + 1}. {rec.text}
-                  </p>
-                ))}
-                 <button onClick={downloadPrescription} className="download-button-calm mt-10">
-                  Download Prescription
-                </button>
-              </div>
-            ) : (
-              <p className="text-black no-prescription text-xl">No prescription available</p>
-            )}
+            <h2 className="text-xl font-semibold text-[#323232] mt-6">Patient Information</h2>
+            <p>Parent Name: {appointment.parentName}</p>
+            <p>Child Name: {appointment.name}</p>
+            <p>Age: {appointment.age}</p>
+            <p>Gender: {appointment.gender}</p>
+            <h2 className="text-xl font-semibold text-[#323232] mt-6">Doctor Information</h2>
+            <p>Doctor Name: {appointment.doctorName}</p>
+            <h2 className="text-xl font-semibold text-[#323232] mt-6">Appointment Information</h2>
+            <p>Fee: {appointment.fees}</p>
+            <p>Payment Status: {appointment.paymentStatus}</p>
           </div>
+
+          {appointment.prescription && prescriptions.length > 0 ? (
+            <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md p-6 mb-10">
+              <h2 className="text-xl font-semibold text-[#323232] mb-4">Prescription</h2>
+              {prescriptions.map((rec, index) => (
+                <p key={rec.id}>{index + 1}. {rec.text}</p>
+              ))}
+              <button
+                onClick={downloadPrescription}
+                className="mt-6 px-4 py-2 bg-[#323232] text-white font-semibold rounded shadow hover:bg-blue-700 transition-all"
+              >
+                Download Prescription
+              </button>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">No prescription available</p>
+          )}
         </div>
       )}
       <Footer />

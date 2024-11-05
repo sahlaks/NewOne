@@ -143,3 +143,9 @@ export const fetchHistory = async (id,name) => {
   const res = await axiosInstanceDoctor.get(`/api/doctor/appointment-history/${id}/${name}`,{withCredentials: true})
   return res.data;
 }
+
+/*..................................delete.............................................*/
+export const deleteChat = async (id) => {
+  const res = await axiosInstanceDoctor.delete(`/api/doctor/deletechats/${id}`,{withCredentials: true})
+  return res.data;
+}

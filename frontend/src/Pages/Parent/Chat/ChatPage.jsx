@@ -5,11 +5,14 @@ import ParentHeader from "../../../Components/Header/ParentHeader";
 import Footer from "../../../Components/Footer/Footer";
 import { useSocket } from "../../../Context/SocketContext";
 import {
+  deleteChat,
   fetchMessages,
   fetchParentChats,
   fetchSearchResult,
   saveMessage,
 } from "../../../utils/parentFunctions";
+import { FaTrash } from "react-icons/fa";
+import CustomPopup from "../../../Components/CustomPopUp/CustomPopup";
 
 const ChatPage = () => {
   const socket = useSocket();
@@ -27,6 +30,8 @@ const ChatPage = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messageRef = useRef(null);
   let debounceTimeout = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [doctorToDelete, setDoctorToDelete] = useState(null);
 
   /*..............................chat list..........................*/
   useEffect(() => {
@@ -55,7 +60,6 @@ const ChatPage = () => {
   const handleDoctorSelect = async (doctor) => {
     setSelectedDoctor(doctor);
     const res = await fetchMessages(doctor._id);
-
     if (res.success) {
       if (res.data.length > 0) {
         setMessages(res.data);
@@ -95,14 +99,10 @@ const ChatPage = () => {
     socket.emit("join_room", { senderId, receiverId });
 
     socket.on("receive_message", (message) => {
-      console.log("Message received:", message);
-
       if (message.senderId !== senderId) {
         setMessages((prevMessages) => [...prevMessages, message]);
 
         if (message.senderId !== selectedDoctor?._id) {
-          console.log(message.senderName);
-
           const notificationContent = `New message from ${message.senderName}: ${message.message}`;
           const notification = {
             type: "message",
@@ -131,6 +131,10 @@ const ChatPage = () => {
       }
     });
 
+    socket.on("updateChatList", (newDoctor) => {
+      setChatLists((prevList) => [...prevList, newDoctor]);
+    });
+
     socket.on("online_users", (users) => {
       setOnlineUsers(users);
     });
@@ -151,6 +155,7 @@ const ChatPage = () => {
     return () => {
       socket.off("receive_message");
       socket.off("online_users");
+      socket.off("updateChatList");
       socket.off("typing");
       socket.off("stop_typing");
     };
@@ -178,34 +183,49 @@ const ChatPage = () => {
         createdAt: moment().toISOString(),
         read: false,
       };
-
+  
       socket.emit("send_message", newMessage);
       await saveMessage(newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-
+  
       setChatLists((prevChatLists) => {
-        const updatedChatLists = prevChatLists.map((chat) => {
-          if (chat.doctorId === receiverId) {
-            return {
-              ...chat,
-              lastMessage: newMessage,
-            };
-          }
-          return chat;
-        });
-
-        return updatedChatLists.sort((a, b) => {
-          const timeA = new Date(a.lastMessage.createdAt).getTime();
-          const timeB = new Date(b.lastMessage.createdAt).getTime();
-          return timeB - timeA;
-        });
+        const doctorExistsInChatList = prevChatLists.some(
+          (chat) => chat.doctorId === receiverId
+        );
+  
+        if (!doctorExistsInChatList) {
+          const newChat = {
+            doctorId: selectedDoctor._id,
+            doctorName: selectedDoctor.doctorName,
+            doctorImage: selectedDoctor.image,
+            lastMessage: newMessage,
+          };
+          return [newChat, ...prevChatLists];
+        }
+  
+        const updatedChatList = prevChatLists
+          .map((chat) => {
+            if (chat.doctorId === receiverId) {
+              return {
+                ...chat,
+                lastMessage: newMessage,
+              };
+            }
+            return chat;
+          })
+          .sort((a, b) => {
+            const timeA = new Date(a.lastMessage.createdAt).getTime();
+            const timeB = new Date(b.lastMessage.createdAt).getTime();
+            return timeB - timeA; 
+          });
+  
+        return updatedChatList;
       });
-
       setMessageInput("");
       socket.emit("stop_typing", { senderId, receiverId });
     }
   };
-
+  
   /*............................typing...............................*/
   const handleTyping = (e) => {
     setMessageInput(e.target.value);
@@ -230,6 +250,29 @@ const ChatPage = () => {
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  /*..............................................delete chat.......................................*/
+  const handleDeleteChat = (doctorId) => {
+    setDoctorToDelete(doctorId);
+    setShowPopup(true);
+  };
+
+  const confirmDelete = async () => {
+    const res = await deleteChat(doctorToDelete)
+    if(res.success){
+      setChatLists((prevList) => prevList.filter((chat) => chat.doctorId !== doctorToDelete));
+      if (selectedDoctor && selectedDoctor._id === doctorToDelete) {
+        setSelectedDoctor(null);
+      }
+      setShowPopup(false); 
+      setDoctorToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowPopup(false);
+    setDoctorToDelete(null);
+  };
 
   return (
     <>
@@ -298,15 +341,28 @@ const ChatPage = () => {
                 <div>
                   <p className="font-semibold">{chat.doctorName}</p>
                   <span
-                    className={`text-sm ${onlineUsers[chat.doctorId] ? "text-green-500" : "text-gray-500"}`}
+                    className={`text-sm ${
+                      onlineUsers[chat.doctorId]
+                        ? "text-green-500"
+                        : "text-gray-500"
+                    }`}
                   >
                     {onlineUsers[chat.doctorId] ? "Online" : "Offline"}
                   </span>
-                  <p className="font-semibold">{chat.lastMessage.message}</p>
+                  <p className="font-semibold">{chat.lastMessage?.message}</p>
                   <span className="last-message-time text-xs text-gray-400">
-                    {moment(chat.lastMessage.createdAt).fromNow()}
+                    {chat.lastMessage ? moment(chat.lastMessage.createdAt).fromNow() : ""}
                   </span>
                 </div>
+                <button
+                  className="text-red-500 hover:text-red-700 ml-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteChat(chat.doctorId);
+                  }}
+                >
+                  <FaTrash />
+                </button>
               </div>
             ))}
           </div>
@@ -403,6 +459,15 @@ const ChatPage = () => {
         </div>
       </div>
       <Footer />
+
+      {showPopup && (
+        <CustomPopup
+          title="Delete Chat"
+          message="Are you sure you want to delete this chat?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </>
   );
 };

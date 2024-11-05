@@ -68,10 +68,11 @@ function ParentOtp() {
     event.preventDefault();
     try {
       if (changePassword) {
-        const response = await axiosInstance.post('/api/parents/verifyOtp', { otp }, { withCredentials: true });
+        const email = localStorage.getItem('forgotpassword')
+        const response = await axiosInstance.post('/api/parents/verifyOtp', { otp, email }, { withCredentials: true });
         if (response.data.success) {
-          setSuccessMessage('OTP verified successfully! You are registered!');
-          toast.success('OTP verified successfully! You are registered!');
+          setSuccessMessage('OTP verified successfully!');
+          toast.success('OTP verified successfully!');
           setErrorMessage('');
           navigate('/password-reset');
         } else {
@@ -79,11 +80,13 @@ function ParentOtp() {
           setErrorMessage('Incorrect OTP');
         }
       } else {
-        const response = await axiosInstance.post('/api/parents/verify-otp', { otp }, { withCredentials: true });
+        const email = localStorage.getItem('userEmail');
+        const response = await axiosInstance.post('/api/parents/verify-otp', { otp, email }, { withCredentials: true });
         const result = response.data;
-
+ 
         if (result.success) {
           setSuccessMessage('OTP verified successfully! You are registered!');
+          localStorage.removeItem('userEmail');
           toast.success('OTP verified successfully! You are registered!');
           setErrorMessage('');
           localStorage.setItem('parentData', JSON.stringify(result.user));
@@ -106,7 +109,8 @@ function ParentOtp() {
     setLoading(true)
     try {
       if (changePassword) {
-        const response = await axiosInstance.post('/api/parents/resendOtp', {}, { withCredentials: true });
+        const email = localStorage.getItem("forgotpassword")
+        const response = await axiosInstance.post('/api/parents/resendOtp', {email}, { withCredentials: true });
         if (response.data.success) {
           setSuccessMessage('New OTP sent. Please check your email.');
           setErrorMessage('');
@@ -116,7 +120,8 @@ function ParentOtp() {
           setErrorMessage(response.data.message || 'Error sending OTP');
         }
       } else {
-        const response = await axiosInstance.post('/api/parents/resend-otp', {}, { withCredentials: true });
+        const email = localStorage.getItem('userEmail')
+        const response = await axiosInstance.post('/api/parents/resend-otp', {email}, { withCredentials: true });
         const result = response.data;
         if (result.success) {
           setSuccessMessage('New OTP sent. Please check your email.');

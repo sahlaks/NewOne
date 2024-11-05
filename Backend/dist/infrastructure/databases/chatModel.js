@@ -9,7 +9,11 @@ const chatSchema = new mongoose_1.default.Schema({
     receiverId: { type: String },
     message: { type: String },
     read: { type: Boolean,
-        default: false }
+        default: false },
+    visibleToParent: { type: Boolean,
+        default: true },
+    visibleToDoctor: { type: Boolean,
+        default: true }
 }, { timestamps: true });
 const chatModel = mongoose_1.default.model('Chat', chatSchema);
 exports.default = chatModel;

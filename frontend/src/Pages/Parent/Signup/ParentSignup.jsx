@@ -127,6 +127,7 @@ function ParentSignup() {
           { withCredentials: true }
         );
         if (response.data.success) {
+          localStorage.setItem('userEmail', userDetails.email); 
           setUserDetails({
             parentName: "",
             email: "",

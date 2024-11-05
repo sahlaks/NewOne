@@ -82,7 +82,6 @@ parentRouter.post("/forgot-pwd", (req, res, next) => {
 
 //verifyOtp
 parentRouter.post("/verifyOtp", (req, res, next) => {
-  console.log(req.body);
   controller.verifyForgotPassword(req, res, next);
 });
 
@@ -217,6 +216,17 @@ parentRouter.get(
   }
 );
 
+parentRouter.get(
+  "/clearNotifications",
+  validateTokens("Parent"),
+  checkBlockedStatus,
+  async (req, res, next) => {
+    controller.clearNotifications(req, res, next);
+  }
+);
+
+
+
 //notification-read
 parentRouter.post(
   "/mark-notification-read",
@@ -267,6 +277,10 @@ parentRouter.post(
   }
 );
 
+//delete chat
+parentRouter.delete("/deletechat/:id", validateTokens('Parent'), checkBlockedStatus, (req, res, next) => {
+  chatController.deleteChat(req,res,next)
+})
 //chat lists
 parentRouter.get('/chatlists',validateTokens('Parent'), checkBlockedStatus, (req,res,next)=>{
   chatController.chatLists(req,res,next)

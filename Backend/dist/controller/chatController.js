@@ -51,11 +51,12 @@ class ChatController {
     /*..............................................fetch messages of a doctor.............................*/
     fetchMessages(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             const senderId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const role = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
             const receiverID = req.query.id;
             try {
-                const messages = yield this.ChatUsecase.fetchMessagesUsingId(senderId, receiverID);
+                const messages = yield this.ChatUsecase.fetchMessagesUsingId(senderId, receiverID, role);
                 if (messages.status)
                     return res.status(200).json({ success: true, data: messages.data });
                 return res.status(400).json({ success: false });
@@ -96,6 +97,40 @@ class ChatController {
                 const chats = yield this.ChatUsecase.fetchChatLists(userId, role);
                 if (chats.status)
                     return res.status(200).json({ success: true, data: chats.data });
+                return res.status(400).json({ success: false });
+            }
+            catch (err) {
+                next(err);
+            }
+        });
+    }
+    /*.....................................delete chat.......................................*/
+    deleteChat(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const doctorId = req.params.id;
+            try {
+                const result = yield this.ChatUsecase.deleteChats(userId, doctorId);
+                if (result.status)
+                    return res.status(200).json({ success: true, message: 'Chat deleted Successfully!' });
+                return res.status(400).json({ success: false });
+            }
+            catch (err) {
+                next(err);
+            }
+        });
+    }
+    /*.....................................delete chat.......................................*/
+    deleteDoctorChat(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const parentId = req.params.id;
+            try {
+                const result = yield this.ChatUsecase.deleteDoctorChats(userId, parentId);
+                if (result.status)
+                    return res.status(200).json({ success: true, message: 'Chat deleted Successfully!' });
                 return res.status(400).json({ success: false });
             }
             catch (err) {

@@ -6,6 +6,8 @@ interface IChat extends Document{
     receiverId:string
     message:string
     read: boolean
+    visibleToParent: boolean
+    visibleToDoctor: boolean
     createdAt: Date;
     updatedAt: Date;
 }

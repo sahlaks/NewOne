@@ -26,9 +26,9 @@ function ForgotPassword() {
     if(validate()){
       try {
         const response = await axiosInstance.post('/api/parents/forgot-pwd',{ email },{ withCredentials:true });
-        console.log('response',response);
           if(response.data.success){
             const changePassword = response.data.changePassword
+            localStorage.setItem('forgotpassword',email)
             setEmail('');
             navigate('/otp', {state: {changePassword}});
           } else{

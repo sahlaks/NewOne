@@ -13,12 +13,6 @@ function PasswordReset() {
     const location = useLocation();
     const doctor = location.state?.doctor || false;
 
-    // useEffect(() => {
-    //   if (parentData) {
-    //     navigate('/');
-    //   }
-    // },[parentData]);
-
     const validate = () => {
         const newErrors = {}
          // Password validation
@@ -49,31 +43,30 @@ function PasswordReset() {
     const handleSubmit = async (event) => {
     event.preventDefault();
     if(validate()){
-      console.log('Form submitted with data:', userDetails);
       try{
       if(doctor){
-        const response = await axiosInstanceDoctor.post('/api/doctor/new-password', userDetails,{ withCredentials:true });
-        console.log('response',response);
-        
+        const email = localStorage.getItem("forgotpwd")
+        const response = await axiosInstanceDoctor.post('/api/doctor/new-password', {userDetails, email},{ withCredentials:true });
         if(response.data.success){
             setUserDetails({
                 password: '',
                 confirmPassword: ''
             });
+            localStorage.clear('forgotpwd')
         navigate('/notify')
         } else {
             setErrors({ ...error, email: response.data.message });
         }
         }
       else{
-        const response = await axiosInstance.post('/api/parents/new-password', userDetails,{ withCredentials:true });
-        console.log('response',response);
-        
+        const email = localStorage.getItem("forgotpassword")
+        const response = await axiosInstance.post('/api/parents/new-password', {userDetails, email},{ withCredentials:true });
         if(response.data.success){
         setUserDetails({
           password: '',
           confirmPassword: ''
         });
+        localStorage.clear('forgotpassword')
         navigate('/notify')
         }else{
             setErrors({ ...error, email: response.data.message });

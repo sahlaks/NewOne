@@ -154,6 +154,21 @@ async getNotifications(id: string): Promise<INotification[] | null> {
   }
   }
 
+  /*..............................................clear all..............................................*/
+  async clearAll(id: string): Promise<{success: boolean, message: string}> {
+    try {
+      const result = await notificationModel.deleteMany({ parentId: id });
+      if (result.deletedCount > 0) {
+        return { success: true, message: "Notifications cleared successfully" };
+      } else {
+        return { success: true, message: "No notifications to clear" };
+      }
+    } catch (error) {
+      console.error("Failed to clear notifications:", error);
+      return { success: false, message: "Error clearing notifications" };
+    }
+  }
+
   /*........................................update to read................................................*/
   async makeRead(id: string): Promise<boolean> {
     try{

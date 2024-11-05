@@ -158,6 +158,24 @@ class ParentRepository {
             }
         });
     }
+    /*..............................................clear all..............................................*/
+    clearAll(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield notificationModel_1.default.deleteMany({ parentId: id });
+                if (result.deletedCount > 0) {
+                    return { success: true, message: "Notifications cleared successfully" };
+                }
+                else {
+                    return { success: true, message: "No notifications to clear" };
+                }
+            }
+            catch (error) {
+                console.error("Failed to clear notifications:", error);
+                return { success: false, message: "Error clearing notifications" };
+            }
+        });
+    }
     /*........................................update to read................................................*/
     makeRead(id) {
         return __awaiter(this, void 0, void 0, function* () {

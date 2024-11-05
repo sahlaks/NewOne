@@ -5,11 +5,16 @@ import DoctorHeader from "../../../Components/Header/DoctorHeader";
 import Footer from "../../../Components/Footer/Footer";
 import { useSocket } from "../../../Context/SocketContext";
 import {
+  deleteChat,
   fetchDoctorChats,
   fetchMessages,
   fetchParentList,
   saveMessage,
 } from "../../../Services/API/DoctorAPI";
+import { FaTrash } from "react-icons/fa";
+import CustomPopup from "../../../Components/CustomPopUp/CustomPopup";
+
+
 
 const DoctorChat = () => {
   const socket = useSocket();
@@ -27,6 +32,8 @@ const DoctorChat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messageRef = useRef(null);
   let debounceTimeout = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [parentToDelete, setParentToDelete] = useState(null);
 
   /*..............................chat list..........................*/
   useEffect(() => {
@@ -91,7 +98,6 @@ const DoctorChat = () => {
     const receiverId = selectedParent?._id;
     socket.emit("join_room", { senderId, receiverId });
 
-    // Receiving messages
     socket.on("receive_message", (message) => {
       if (message.senderId !== senderId) {
         setMessages((prevMessages) => [...prevMessages, message]);
@@ -125,6 +131,10 @@ const DoctorChat = () => {
       }
     });
 
+    socket.on("updateChatList", (newDoctor) => {
+      setChatLists((prevList) => [...prevList, newDoctor]);
+    });
+
     //online users
     socket.on("online_users", (users) => {
       setOnlineUsers(users);
@@ -146,6 +156,7 @@ const DoctorChat = () => {
     return () => {
       socket.off("receive_message");
       socket.off("online_users");
+      socket.off("updateChatList");
       socket.off("typing");
       socket.off("stop_typing");
     };
@@ -178,7 +189,22 @@ const DoctorChat = () => {
       socket.emit("send_message", newMessage);
       await saveMessage(newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+
       setChatLists((prevChatLists) => {
+        const parentExistsInChatList = prevChatLists.some(
+          (chat) => chat.parentId === receiverId
+        );
+  
+        if (!parentExistsInChatList) {
+          const newChat = {
+            parentId: selectedParent._id,
+            parentName: selectedParent.parentName,
+            parentImage: selectedParent.image,
+            lastMessage: newMessage,
+          };
+          return [newChat, ...prevChatLists]; 
+        }
+  
         const updatedChatLists = prevChatLists.map((chat) => {
           if (chat.parentId === receiverId) {
             return {
@@ -224,6 +250,30 @@ const DoctorChat = () => {
   useEffect(() => {
     messageRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+/*..............................................delete chat.......................................*/
+  const handleDeleteChat = (parentId) => {
+    setParentToDelete(parentId);
+    setShowPopup(true);
+  };
+
+  const confirmDelete = async () => {
+    const res = await deleteChat(parentToDelete)
+    if(res.success){
+      setChatLists((prevList) => prevList.filter((chat) => chat.parentId !== parentToDelete));
+      if (selectedParent && selectedParent._id === parentToDelete) {
+        setSelectedParent(null);
+      }
+      setShowPopup(false); 
+      setParentToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowPopup(false);
+    setParentToDelete(null);
+  };
+
 
   return (
     <>
@@ -301,6 +351,15 @@ const DoctorChat = () => {
                     {moment(chat.lastMessage.createdAt).fromNow()}
                   </span>
                 </div>
+                <button
+                  className="text-red-500 hover:text-red-700 ml-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteChat(chat.parentId);
+                  }}
+                >
+                  <FaTrash />
+                </button>
               </div>
             ))}
           </div>
@@ -396,8 +455,15 @@ const DoctorChat = () => {
           )}
         </div>
       </div>
-
       <Footer />
+       {showPopup && (
+        <CustomPopup
+          title="Delete Chat"
+          message="Are you sure you want to delete this chat?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </>
   );
 };

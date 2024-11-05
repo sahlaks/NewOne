@@ -11,7 +11,7 @@ const NotificationList = () => {
             <div
             key={notification._id}
             className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
-            onClick={() => markAsRead(notification._id)} // Mark as read on click
+            onClick={() => markAsRead(notification._id)} 
             >
               <p>
                 {notification.type === "message"

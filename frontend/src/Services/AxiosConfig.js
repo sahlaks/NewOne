@@ -7,6 +7,7 @@ import { getNavigate } from '../utils/navigateHelper';
 /*.............................................parent.............................................*/
 const axiosInstance = axios.create({
     baseURL:'https://calmnest.site',
+    //baseURL:'http://localhost:5000',
     headers:{
         'Content-Type':'application/json'
     },
@@ -59,6 +60,7 @@ axiosInstance.interceptors.response.use((response) => {
 /*................................................doctor......................................................*/
 const axiosInstanceDoctor = axios.create({
     baseURL:'https://calmnest.site',
+    //baseURL:'http://localhost:5000',
     headers:{
         'Content-Type':'application/json'
     }
@@ -108,6 +110,7 @@ axiosInstanceDoctor.interceptors.response.use((response) => {
 /*.............................................admin.............................................*/
 const axiosInstanceAdmin = axios.create({
     baseURL:'https://calmnest.site',
+    //baseURL:'http://localhost:5000',
     headers:{
         'Content-Type':'application/json'
     }

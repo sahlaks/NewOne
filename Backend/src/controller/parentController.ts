@@ -6,6 +6,8 @@ import { verifyRefreshToken } from "../infrastructure/services/tokenVerification
 import { jwtCreation } from "../infrastructure/services/JwtCreation";
 import { uploadImage } from "../infrastructure/services/cloudinaryService";
 import mongoose from "mongoose";
+import tempModel from "../infrastructure/databases/temporaryModel";
+
 
 export class ParentController {
   constructor(private ParentUseCase: ParentUseCase) {}
@@ -17,15 +19,6 @@ export class ParentController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { parentName, email, mobileNumber, password } = req.body;
-      req.session.signupData = {
-        parentName,
-        email,
-        mobileNumber,
-        password,
-      };
-      console.log("parennt ", req.session.signupData);
-      
       const result = await this.ParentUseCase.registrationParent(req);
 
       if (result.status) {
@@ -51,22 +44,19 @@ export class ParentController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { otp } = req.body;
-      const sessionOtp = req.session.otp;
-      const signupData = req.session.signupData;
-      console.log('session otp', sessionOtp);
-      console.log('signup data:', signupData);
-
-      if (!signupData) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No signup data found" });
-      }
-
-      if (otp !== sessionOtp) {
+      const { otp, email } = req.body;
+      const tempUser = await tempModel.findOne({ email }); 
+      if (otp !== tempUser?.otp) {
         return res.json({ success: false, message: "Incorrect OTP" });
       }
-
+      const signupData = {
+        parentName : tempUser?.parentName,
+        email: tempUser?.email,
+        mobileNumber: tempUser?.mobileNumber,
+        password: tempUser?.password,
+      }
+      console.log(signupData,'  new');
+      
       const result = await this.ParentUseCase.saveUser(signupData as IParent);
       if (result.status) {
         res.cookie("access_token", result.accesstoken, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
@@ -92,10 +82,10 @@ export class ParentController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const email = req.session.signupData?.email as string;
+      const {email} = req.body
+      
       const result = await this.ParentUseCase.sendOtp(email);
       if (result.status) {
-        req.session.otp = result.otp;
         return res.status(200).json({
           success: true,
           message: "OTP send to your email",
@@ -200,8 +190,6 @@ export class ParentController {
 
       const result = await this.ParentUseCase.verifyEmail(email);
       if (result.status) {
-        req.session.pEmail = email;
-        req.session.otp = result.otp;
         return res.status(200).json({
           success: true,
           message: "OTP send to your email, change password",
@@ -224,10 +212,9 @@ export class ParentController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { otp } = req.body;
-      const sessionOtp = req.session.otp;
-
-      if (otp !== sessionOtp) {
+      const { otp, email } = req.body;
+      const tempUser = await tempModel.findOne({ email }); 
+      if (otp !== tempUser?.otp) {
         return res.json({ success: false, message: "Incorrect OTP" });
       } else {
         return res.json({
@@ -246,16 +233,15 @@ export class ParentController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> {
-    const email = req.session.pEmail as string;
+    const {email} = req.body;
     if (!email) {
       return res
         .status(400)
-        .json({ success: false, message: "No email found in session." });
+        .json({ success: false, message: "Email not found ." });
     }
     try {
       const result = await this.ParentUseCase.sendOtp(email);
       if (result.status) {
-        req.session.otp = result.otp;
         return res.status(200).json({
           success: true,
           message: "OTP send to your email",
@@ -278,15 +264,16 @@ export class ParentController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { password } = req.body;
-      const email = req.session.pEmail;
+      const { userDetails, email } = req.body;
+      const { password, confirmPassword } = userDetails;
       if (!email) {
         return res
           .status(400)
-          .json({ success: false, message: "No email found in session." });
+          .json({ success: false, message: "No email found" });
       }
       const result = await this.ParentUseCase.savePassword(email, password);
       if (result.status) {
+        await tempModel.findOneAndDelete({email})
         return res.status(200).json({ success: true, message: result.message });
       } else {
         return res
@@ -562,6 +549,18 @@ export class ParentController {
         if(result.status) return res.status(200).json({success: true, message: result.message, data: result.data})
         return res.status(400).json({success: false, message: result.message})
       } catch(error) {
+        next(error)
+      }
+    }
+
+    /*...............................................clear.........................................*/
+    async clearNotifications(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+      const parentId = req.user?.id as string;
+      try{
+        const result = await this.ParentUseCase.clearAllNotifications(parentId)
+        if(result.status) return res.status(200).json({success: true, message: result.message})
+        return res.status(400).json({success: false})
+      }catch(error){
         next(error)
       }
     }

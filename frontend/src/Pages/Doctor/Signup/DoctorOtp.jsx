@@ -64,28 +64,27 @@ function DoctorOtp() {
     event.preventDefault();
     try{
       if(changePassword){
-        const response = await axiosInstanceDoctor.post('/api/doctor/verifyOtp',{otp},{withCredentials:true});
-        console.log(response);
+        const email = localStorage.getItem('forgotpwd')
+        console.log(email,'otp');
+        
+        const response = await axiosInstanceDoctor.post('/api/doctor/verifyOtp',{otp,email},{withCredentials:true});
         if(response.data.success){
         setSuccessMessage('OTP verified successfully! You are registered!')
         setErrorMessage('')
         const doctor = true;
-        console.log(response);
-        
         navigate('/password-reset',{state: {doctor}});
         } else {
           setSuccessMessage('')
           setErrorMessage('Incorrect OTP')
         }
       } else {
-      const response = await axiosInstanceDoctor.post('/api/doctor/verify-otp', {otp},{ withCredentials:true });
-      console.log('otp',response);
+        const email = localStorage.getItem('docemail')
+      const response = await axiosInstanceDoctor.post('/api/doctor/verify-otp', {otp, email},{ withCredentials:true });
       
       const result = response.data;
-      console.log(result);
-      
       if(result.success){
         toast.success('OTP verified successfully! You are registered!',)
+        localStorage.removeItem('docemail')
         setTimeout(() => {
           navigate('/verification');
         },2000);
@@ -106,9 +105,11 @@ function DoctorOtp() {
     try {
       let response;
       if (changePassword) {
-        response = await axiosInstanceDoctor.post('/api/doctor/resendOtp', {}, { withCredentials: true });
+        const email = localStorage.getItem("forgotpwd")
+        response = await axiosInstanceDoctor.post('/api/doctor/resendOtp', {email}, { withCredentials: true });
       } else {
-        response = await axiosInstanceDoctor.post('/api/doctor/resend-otp', {}, { withCredentials: true });
+        const email = localStorage.getItem('docemail')
+        response = await axiosInstanceDoctor.post('/api/doctor/resend-otp', {email}, { withCredentials: true });
       }
 
       if (response.data.success) {

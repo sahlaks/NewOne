@@ -10,22 +10,20 @@ import { useSocket } from "../../../Context/SocketContext";
 import VideoCallModal from "../../../Components/Video/VideoCallModal";
 import { useNavigate } from "react-router-dom";
 
-
-
 function ShowAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const socket = useSocket()
+  const socket = useSocket();
   const parentData = JSON.parse(localStorage.getItem("parentData"));
   const senderId = parentData?._id;
 
-  const [modalOpen, setModalOpen] = useState(false); 
-  const [appointmentId, setAppointmentId] = useState(null)
-  const [selected,setSelected] = useState({})
-  
-  const navigate = useNavigate()
+  const [modalOpen, setModalOpen] = useState(false);
+  const [appointmentId, setAppointmentId] = useState(null);
+  const [selected, setSelected] = useState({});
+
+  const navigate = useNavigate();
 
   const fetchAppointments = async (page = 1, limit = 6) => {
     try {
@@ -55,21 +53,21 @@ function ShowAppointments() {
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
-        return "text-yellow-800";
+        return "text-yellow-600";
       case "Scheduled":
-        return "text-blue-800";
+        return "text-blue-600";
       case "Completed":
-        return "text-green-800";
+        return "text-green-600";
       case "Cancelled":
-        return "text-red-800";
+        return "text-red-600";
       default:
         return "";
     }
   };
 
   const handleVideoClick = (appointment) => {
-    setAppointmentId(appointment._id)
-    setSelected(appointment)
+    setAppointmentId(appointment._id);
+    setSelected(appointment);
     setModalOpen(true);
   };
 
@@ -78,33 +76,25 @@ function ShowAppointments() {
       case "Scheduled":
         return (
           <button
-            className="text-blue-800 flex items-center justify-center"
+            className="flex items-center text-blue-500 hover:text-blue-700 transition-all duration-150"
             onClick={() => handleVideoClick(appointment)}
           >
             <FaVideo size={20} />
-            <span className="ml-2">On Time</span>
+            <span className="ml-2">Join Session</span>
           </button>
         );
       case "Pending":
-        return (
-          <div className="text-yellow-800 flex items-center">
-             Waiting
-          </div>
-        );
+        return <div className="text-yellow-500">Waiting</div>;
       case "Cancelled":
-        return (
-          <div className="text-red-800 flex items-center">
-            <FaTimesCircle size={20} />
-          </div>
-        );
+        return <div className="text-red-500 flex items-center"><FaTimesCircle size={20} /></div>;
       default:
-        return <span>-</span>; 
+        return <span>-</span>;
     }
   };
 
   const handleDetailsClick = (appointment) => {
     navigate(`/appointments/details`, { state: { appointment } });
-  }
+  };
 
   useEffect(() => {
     if (!socket) {
@@ -114,11 +104,10 @@ function ShowAppointments() {
     if (senderId) {
       const role = 'Parent';
       socket.emit("user_connected", senderId);
-      socket.emit('join',{senderId,role});
+      socket.emit('join', { senderId, role });
       console.log(`User connected with ID: ${senderId}`);
     }
-  },[socket])
-
+  }, [socket]);
 
   return (
     <>
@@ -128,79 +117,46 @@ function ShowAppointments() {
           <Loading />
         ) : (
           <>
-            <h1 className="text-2xl font-bold mb-5 text-center mt-20">
-              Appointments Details
+            <h1 className="text-3xl font-semibold text-center mt-16 mb-10">
+              Appointments Overview
             </h1>
 
-            {/* Table layout for large screens */}
             <div className="hidden md:flex flex-col items-center justify-center mt-2 mb-10">
               {appointments.length === 0 ? (
                 <div className="text-center">
                   <p className="text-xl font-bold text-gray-700">
-                    No Appointments created yet!
+                    No Appointments available!
                   </p>
                 </div>
               ) : (
-                <div className="w-full md:w-3/4 lg:w-2/3">
-                  <table className="table-auto border-collapse border border-black-300 w-full bg-[#DDD0C8]">
+                <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md overflow-hidden">
+                  <table className="table-auto border-collapse w-full">
                     <thead>
-                      <tr className="border-b border-black-300 bg-[white]">
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          No.
-                        </th>
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          Date
-                        </th>
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          Start Time
-                        </th>
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          Doctor
-                        </th>
-                       
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          Status
-                        </th>
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          Video Session
-                        </th>
-                        <th className="border-r border-black-300 px-4 py-2 text-center">
-                          View
-                        </th>
+                      <tr className="bg-[#D3C5B7] text-gray-800">
+                        <th className="px-4 py-3 text-left">No.</th>
+                        <th className="px-4 py-3 text-left">Date</th>
+                        <th className="px-4 py-3 text-left">Start Time</th>
+                        <th className="px-4 py-3 text-left">Doctor</th>
+                        <th className="px-4 py-3 text-left">Status</th>
+                        <th className="px-4 py-3 text-left">Video Session</th>
+                        <th className="px-4 py-3 text-left">Details</th>
                       </tr>
                     </thead>
                     <tbody>
                       {appointments.map((appointment, index) => (
-                        <tr key={appointment._id}>
-                          <td className="border-r border-black-300 px-4 py-2 text-center">
-                            {index + 1}
-                          </td>
-                          <td className="border-r border-black-300 px-4 py-2 text-center">
-                            {appointment.date}
-                          </td>
-                          <td className="border-r border-black-300 px-4 py-2 text-center">
-                            {appointment.startTime}
-                          </td>
-                
-                          <td className="border-r border-black-300 px-4 py-2 text-center">
-                            {appointment.doctorName}
-                          </td>
-                          
-                          <td
-                            className={`border-r border-black-300 px-4 py-2 text-center ${getStatusClass(appointment.appointmentStatus)}`}
-                          >
+                        <tr key={appointment._id} className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'}`}>
+                          <td className="px-4 py-3">{index + 1}</td>
+                          <td className="px-4 py-3">{appointment.date}</td>
+                          <td className="px-4 py-3">{appointment.startTime}</td>
+                          <td className="px-4 py-3">{appointment.doctorName}</td>
+                          <td className={`px-4 py-3 ${getStatusClass(appointment.appointmentStatus)}`}>
                             {appointment.appointmentStatus}
                           </td>
-                          <td
-                            className={`border-r border-black-300 px-4 py-2 items-center justify-center`}
-                          >
-                             {renderVideoSession(appointment.appointmentStatus,appointment)}
-                          </td>
-                          <td
-                            className={`border-r border-black-300 px-4 py-2 items-center justify-center`}
-                          > <button className="underline" onClick={() => handleDetailsClick(appointment)}>
-                             Details
-                          </button>
+                          <td className="px-4 py-3">{renderVideoSession(appointment.appointmentStatus, appointment)}</td>
+                          <td className="px-4 py-3">
+                            <button className="text-blue-600 underline" onClick={() => handleDetailsClick(appointment)}>
+                              View
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -209,50 +165,29 @@ function ShowAppointments() {
                 </div>
               )}
             </div>
-
-            {/* Card layout for small and medium screens */}
+            {/* Mobile view for appointments */}
             <div className="md:hidden p-4">
               {appointments.length === 0 ? (
                 <div className="text-center">
                   <p className="text-xl font-bold text-gray-700">
-                    No Appointments created yet!
+                    No Appointments available!
                   </p>
                 </div>
               ) : (
                 appointments.map((appointment, index) => (
-                  <div
-                    key={appointment._id}
-                    className="border border-[#FAF5E9]-500 shadow-lg p-4 mb-4 bg-[#DDD0C8]"
-                  >
-                    <p>
-                      <strong>No:</strong> {index + 1}
-                    </p>
-                    <p>
-                      <strong>Date:</strong> {appointment.date}
-                    </p>
-                    <p>
-                      <strong>Start Time:</strong> {appointment.startTime}
-                    </p>
-                   
-                    <p>
-                      <strong>Doctor:</strong> {appointment.doctorName}
-                    </p>
-                    <p
-                      className={getStatusClass(appointment.appointmentStatus)}
-                    >
+                  <div key={appointment._id} className="border p-4 mb-4 bg-white shadow-md rounded-lg">
+                    <p><strong>No:</strong> {index + 1}</p>
+                    <p><strong>Date:</strong> {appointment.date}</p>
+                    <p><strong>Start Time:</strong> {appointment.startTime}</p>
+                    <p><strong>Doctor:</strong> {appointment.doctorName}</p>
+                    <p className={getStatusClass(appointment.appointmentStatus)}>
                       <strong>Status:</strong> {appointment.appointmentStatus}
                     </p>
+                    <p><strong>Video Session:</strong> {renderVideoSession(appointment.appointmentStatus, appointment)}</p>
                     <p>
-                      <strong>Video Session:</strong>
-                      {renderVideoSession(
-                        appointment.appointmentStatus,
-                        appointment
-                      )}
-                    </p>
-                    <p>
-                    <button>
-                        <span className="font-semibold underline" onClick={() => handleDetailsClick(appointment)}>Details </span>
-                        </button>
+                      <button className="underline text-blue-600" onClick={() => handleDetailsClick(appointment)}>
+                        Details
+                      </button>
                     </p>
                   </div>
                 ))
@@ -260,19 +195,15 @@ function ShowAppointments() {
             </div>
           </>
         )}
-        <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-        <FeedbackButton/>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        <FeedbackButton />
         <Footer />
       </div>
 
       <VideoCallModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)} 
-        user={{ role: "Parent", id:appointmentId, userid: senderId}}
+        onClose={() => setModalOpen(false)}
+        user={{ role: "Parent", id: appointmentId, userid: senderId }}
         appointment={selected}
       />
     </>

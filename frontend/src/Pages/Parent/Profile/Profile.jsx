@@ -289,406 +289,238 @@ const Profile = () => {
 
   return (
     <>
-    <div className="min-h-screen p-6 flex flex-col items-center justify-center">
-      <HeaderSwitcher/>
-      {loading ? (
-        <Loading />
-      ) : (
-        <div className="min-h-screen p-6 flex items-center justify-center mt-5">
-          <div>
-            <div>
-              <div className=" rounded shadow-xl p-4 px-4 md:p-8 mb-6">
-                <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
-                  <div className="text-[#323232]">
-                    <p className=" text-2xl font-bold">Personal Details</p>
+      <div className="min-h-screen p-6 flex flex-col items-center justify-center bg-[#FAF5E9]">
+  <HeaderSwitcher />
+  {loading ? (
+    <Loading />
+  ) : (
+    <div className="w-full max-w-4xl mx-auto mt-5">
+      <div className="bg-white rounded shadow-xl p-6 mb-6">
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Left Column - Profile Picture & Basic Actions */}
+          <div className="text-[#323232]">
+            <h2 className="text-2xl font-bold mb-4">Personal Details</h2>
 
-                    <div className="flex flex-col max-w-md p-6 dark:text-gray-100">
-                      <label
-                        htmlFor="imageInput"
-                        className="text-slate-400 cursor-pointer"
-                      >
-                        <input
-                          type="file"
-                          id="imageInput"
-                          className="hidden"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                        />
-                        <div className="relative">
-                          <img
-                            src={image || defaultImage}
-                            alt="Profile"
-                            className="flex-shrink-0 object-cover h-64 rounded-sm sm:h-96 dark:bg-gray-500 aspect-square"
-                          />
-                          {selectedImage && (
-                            <ImageCropperModal
-                              open={isCropperOpen}
-                              onClose={handleCropperClose}
-                              imageSrc={selectedImage}
-                              onCropSubmit={handleCropSubmit}
-                            />
-                          )}
-                          {image && (
-                            <button
-                              className="absolute top-0 right-0 p-2 bg-red-500 btn btn-primary bg-blue-500 text-white px-4 py-2 rounded-md"
-                              onClick={() => setImage(null)}
-                            >
-                              X
-                            </button>
-                          )}
-                        </div>
-                        {imageError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {imageError}
-                          </p>
-                        )}
-                      </label>
-                    </div>
-
-                    <div>
-                      <p className="text-xl text-gray-600">
-                        Want to change your password?{" "}
-                        <button
-                          className="text-blue-500 hover:underline"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleClickOpen();
-                          }}
-                        >
-                          Click here
-                        </button>
-                      </p>
-                      <ChangePassword open={open} onClose={handleClose} />
-                    </div>
-                  </div>
-
-                  <div className="lg:col-span-2">
-                    <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-2">
-                      <div className="md:col-span-2">
-                        <label
-                          className="text-[#323232]-600"
-                          htmlFor="full_name"
-                        >
-                          Name
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="full_name"
-                          id="full_name"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${nameError ? "border-red-500" : "bg-gray-50"}`}
-                          value={name}
-                          onChange={(e) => {
-                            setName(e.target.value);
-                            validateName(e.target.value);
-                          }}
-                        />
-                        {nameError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {nameError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div style={{ position: "relative" }}>
-                        <div>
-                          <label htmlFor="email">Email Address</label>
-                          <div style={{ position: "relative" }}>
-                            <input
-                              style={{ fontWeight: "bold", color: "black" }}
-                              type="text"
-                              name="email"
-                              id="email"
-                              className={`h-10 border mt-1 rounded-xl px-4 w-full ${emailError ? "border-red-500" : "bg-gray-50"}`}
-                              value={email}
-                              onChange={(e) => {
-                                setEmail(e.target.value);
-                                validateEmail(e.target.value);
-                              }}
-                            />
-                            <button
-                              onClick={handleUpdateEmailClick}
-                              className="text-sm text-blue-500 mt-1 absolute right-4 top-1/2 transform -translate-y-1/2 underline"
-                            >
-                              Update Email
-                            </button>
-                          </div>
-                          {emailError && (
-                            <p className="text-red-500 text-xs mt-1">
-                              {emailError}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-[#323232]-400" htmlFor="phone">
-                          Phone Number
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="phone"
-                          id="phone"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${phoneError ? "border-red-500" : "bg-gray-50"}`}
-                          value={phone}
-                          onChange={(e) => {
-                            setPhone(e.target.value);
-                            validatePhone(e.target.value);
-                          }}
-                        />
-                        {phoneError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {phoneError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="text-[#323232]-400" htmlFor="num">
-                          Number of kids
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="number"
-                          name="num"
-                          id="num"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${numError ? "border-red-500" : "bg-gray-50"}`}
-                          value={num}
-                          onChange={(e) => {
-                            setNum(e.target.value);
-                            validateNum(e.target.value);
-                          }}
-                        />
-                        {numError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {numError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col max-w-md p-6 dark:text-gray-100">
-                      <label className="text-sm">Kids Details</label>
-                      {kids.length > 0 ? (
-                        
-                      kids.map((kid, index) => (
-                        <div key={index} className="mb-4 p-4 border rounded-lg">
-                          <div className="flex flex-col mb-2">
-                            <label htmlFor={`kid_name_${index}`} className="text-sm">
-                              <span className="text-red-500">*</span> Kid's Name
-                            </label>
-                            <input
-                              style={{ fontWeight: 'bold', color: 'black' }}
-                              type="text"
-                              id={`kid_name_${index}`}
-                              name="name"
-                              value={kid.name}
-                              onChange={(e) => handleInputChange(index, e)}
-                              className="mt-1 border rounded-md p-2"
-                            />
-                            {kidsError[`name_${index}`] && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {kidsError[`name_${index}`]}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="flex flex-col mb-2">
-                            <label htmlFor={`kid_age_${index}`} className="text-sm">
-                              <span className="text-red-500">*</span> Age
-                            </label>
-                            <input
-                              style={{ fontWeight: 'bold', color: 'black' }}
-                              type="number"
-                              id={`kid_age_${index}`}
-                              name="age"
-                              value={kid.age}
-                              onChange={(e) => handleInputChange(index, e)}
-                              className="mt-1 border rounded-md p-2"
-                            />
-                            {kidsError[`age_${index}`] && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {kidsError[`age_${index}`]}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="flex flex-col mb-2">
-                            <label htmlFor={`kid_gender_${index}`} className="text-sm">
-                              <span className="text-red-500">*</span> Gender
-                            </label>
-                            <select
-                              id={`kid_gender_${index}`}
-                              name="gender"
-                              value={kid.gender}
-                              onChange={(e) => handleInputChange(index, e)}
-                              className="mt-1 border rounded-md p-2"
-                            >
-                              <option value="">Select Gender</option>
-                              <option value="Male">Male</option>
-                              <option value="Female">Female</option>
-                            </select>
-                            {kidsError[`gender_${index}`] && (
-                              <p className="text-red-500 text-xs mt-1">
-                                {kidsError[`gender_${index}`]}
-                              </p>
-                            )}
-                          </div>
-
-                          <button
-                            onClick={() => removeKid(kid._id,index)}
-                            className="text-red-500 mt-2"
-                          >
-                            Remove Kid
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <h2 className="text-xl text-red-500">No kids data available</h2>
-                    )}
-                      <button
-                        onClick={addKid}
-                        className="bg-[#323232] text-white px-4 py-2 rounded-md"
-                      >
-                        Add Kid
-                      </button>
-                    </div>
-
-                      {/* Other Details */}
-
-                      <div className="md:col-span-2">
-                        <label className="text-[#323232]-400" htmlFor="street">
-                          Street Address
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="street"
-                          id="street"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${streetError ? "border-red-500" : "bg-gray-50"}`}
-                          value={street}
-                          onChange={(e) => {
-                            setStreet(e.target.value);
-                            validateStreet(e.target.value);
-                          }}
-                        />
-                        {streetError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {streetError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="text-[#323232]-400" htmlFor="city">
-                          City
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="city"
-                          id="city"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${cityError ? "border-red-500" : "bg-gray-50"}`}
-                          value={city}
-                          onChange={(e) => {
-                            setCity(e.target.value);
-                            validateCity(e.target.value);
-                          }}
-                        />
-                        {cityError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {cityError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="text-[#323232]-400" htmlFor="state">
-                          State / province
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="state"
-                          id="state"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${stateError ? "border-red-500" : "bg-gray-50"}`}
-                          value={state}
-                          onChange={(e) => {
-                            setState(e.target.value);
-                            validateState(e.target.value);
-                          }}
-                        />
-                        {stateError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {stateError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="text-[#323232]-400" htmlFor="country">
-                          Country
-                        </label>
-                        <input
-                          style={{ fontWeight: "bold", color: "black" }}
-                          type="text"
-                          name="country"
-                          id="country"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${countryError ? "border-red-500" : "bg-gray-50"}`}
-                          value={country}
-                          onChange={(e) => {
-                            setCountry(e.target.value);
-                            validateCountry(e.target.value);
-                          }}
-                        />
-                        {countryError && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {countryError}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="md:col-span-2 text-right">
-                        <div className="flex justify-end space-x-3">
-                          <div>
-                            <button
-                              className="bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                              type="button"
-                              onClick={handleCancel}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                          <div>
-                            <button
-                              className="bg-[#323232] hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                              type="submit"
-                              onClick={handleSubmit}
-                            >
-                              Submit
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            {/* Profile Picture */}
+            <div className="flex flex-col items-center mb-6">
+              <label htmlFor="imageInput" className="cursor-pointer">
+                <input
+                  type="file"
+                  id="imageInput"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+                <div className="relative">
+                  <img
+                    src={image || defaultImage}
+                    alt="Profile"
+                    className="h-48 w-48 object-cover rounded-full shadow-md"
+                  />
+                  {selectedImage && (
+                    <ImageCropperModal
+                      open={isCropperOpen}
+                      onClose={handleCropperClose}
+                      imageSrc={selectedImage}
+                      onCropSubmit={handleCropSubmit}
+                    />
+                  )}
+                  {image && (
+                    <button
+                      className="absolute top-0 right-0 p-2 bg-red-500 text-white rounded-full"
+                      onClick={() => setImage(null)}
+                    >
+                      X
+                    </button>
+                  )}
                 </div>
+                {imageError && (
+                  <p className="text-red-500 text-xs mt-1">{imageError}</p>
+                )}
+              </label>
+            </div>
+
+            {/* Password Update */}
+            <p className="text-lg text-gray-600 mb-4">
+              Want to change your password?{" "}
+              <button
+                className="text-blue-500 hover:underline"
+                onClick={handleClickOpen}
+              >
+                Click here
+              </button>
+            </p>
+            <ChangePassword open={open} onClose={handleClose} />
+          </div>
+
+          {/* Middle Column - Personal & Contact Info */}
+          <div className="lg:col-span-2">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+              {/* Name */}
+              <div className="md:col-span-2">
+                <label htmlFor="full_name" className="font-semibold">Name</label>
+                <input
+                  type="text"
+                  id="full_name"
+                  className="h-10 border mt-1 rounded-xl px-4 w-full bg-gray-50 font-bold text-black"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    validateName(e.target.value);
+                  }}
+                />
+                {nameError && (
+                  <p className="text-red-500 text-xs mt-1">{nameError}</p>
+                )}
               </div>
-              <p className="text-sm text-center text-gray-400 mt-3">
-                By using this service, you agree to the terms and privacy
-                policy.
-              </p>
+
+              {/* Email */}
+              <div className="relative">
+                <label htmlFor="email" className="font-semibold">Email Address</label>
+                <input
+                  type="text"
+                  id="email"
+                  className="h-10 border mt-1 rounded-xl px-4 w-full bg-gray-50 font-bold text-black"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    validateEmail(e.target.value);
+                  }}
+                />
+                {/* <button
+                  onClick={handleUpdateEmailClick}
+                  className="text-sm text-blue-500 mt-1 absolute right-4 top-1/2 transform -translate-y-1/2 underline"
+                >
+                  Update Email
+                </button> */}
+                {emailError && (
+                  <p className="text-red-500 text-xs mt-1">{emailError}</p>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label htmlFor="phone" className="font-semibold">Phone Number</label>
+                <input
+                  type="text"
+                  id="phone"
+                  className="h-10 border mt-1 rounded-xl px-4 w-full bg-gray-50 font-bold text-black"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    validatePhone(e.target.value);
+                  }}
+                />
+                {phoneError && (
+                  <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+                )}
+              </div>
+
+              {/* Number of Kids */}
+              <div>
+                <label htmlFor="num" className="font-semibold">Number of Kids</label>
+                <input
+                  type="number"
+                  id="num"
+                  className="h-10 border mt-1 rounded-xl px-4 w-full bg-gray-50 font-bold text-black"
+                  value={num}
+                  onChange={(e) => {
+                    setNum(e.target.value);
+                    validateNum(e.target.value);
+                  }}
+                />
+                {numError && (
+                  <p className="text-red-500 text-xs mt-1">{numError}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Kid Details */}
+            <div className="mt-6">
+              <label className="text-sm font-semibold">Kids Details</label>
+              {kids.length > 0 ? (
+                kids.map((kid, index) => (
+                  <div key={index} className="mb-4 p-4 border rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Kid's Name */}
+                      <div>
+                        <label htmlFor={`kid_name_${index}`} className="text-sm">Kid's Name</label>
+                        <input
+                          type="text"
+                          id={`kid_name_${index}`}
+                          name="name"
+                          value={kid.name}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="mt-1 border rounded-md p-2 font-bold text-black w-full"
+                        />
+                         {kidsError[`name_${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{kidsError[`name_${index}`]}</p>
+            )}
+                      </div>
+                      {/* Kid's Age */}
+                      <div>
+                        <label htmlFor={`kid_age_${index}`} className="text-sm">Age</label>
+                        <input
+                          type="number"
+                          id={`kid_age_${index}`}
+                          name="age"
+                          value={kid.age}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="mt-1 border rounded-md p-2 font-bold text-black w-full"
+                        />
+                         {kidsError[`age_${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{kidsError[`age_${index}`]}</p>
+            )}
+                      </div>
+                      {/* Kid's Gender */}
+                      <div>
+                        <label htmlFor={`kid_gender_${index}`} className="text-sm">Gender</label>
+                        <select
+                          id={`kid_gender_${index}`}
+                          name="gender"
+                          value={kid.gender}
+                          onChange={(e) => handleInputChange(index, e)}
+                          className="mt-1 border rounded-md p-2 font-bold text-black w-full"
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                    {kidsError[`gender_${index}`] && (
+              <p className="text-red-500 text-xs mt-1">{kidsError[`gender_${index}`]}</p>
+            )}
+                      </div>
+                    </div>
+                    <button onClick={() => removeKid(kid._id, index)} className="text-red-500 mt-2">Remove Kid</button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xl text-red-500">No kids data available</p>
+              )}
+              <button onClick={addKid} className="bg-[#323232] text-white px-4 py-2 rounded-md mt-3">Add Kid</button>
             </div>
           </div>
         </div>
-      )}
-      <div>
-        <Footer />
+
+        {/* Update Button */}
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handleSubmit}
+            className="bg-[#323232] text-white px-6 py-2 rounded-lg text-lg font-semibold"
+          >
+            Update Profile
+          </button>
+        </div>
       </div>
     </div>
-      <FeedbackButton/>
+  )}
+  <Footer />
+  <FeedbackButton />
+</div>
+
     </>
   );
+  
 };
 
 export default Profile

@@ -7,6 +7,7 @@ import { verifyRefreshToken } from "../infrastructure/services/tokenVerification
 import { jwtCreation } from "../infrastructure/services/JwtCreation";
 import { AuthRequest } from "../domain/entity/types/auth";
 import uploadDocument from "../infrastructure/services/documentUpload";
+import tempModel from "../infrastructure/databases/temporaryModel";
 
 
 
@@ -31,24 +32,10 @@ export class DoctorController {
           });
         }
 
-        const documentUrl = `uploads/${file.filename}`;
-        
-      req.session.doctorData = {
-        doctorName,
-        email,
-        mobileNumber,
-        password,
-        document: documentUrl
-      };
-
-      console.log('doc', req.session.doctorData);
-      
-      const result = await this.DoctorUseCase.registrationDoctor(email);
+      const documentUrl = `uploads/${file.filename}`;     
+      const result = await this.DoctorUseCase.registrationDoctor(doctorName,email,mobileNumber,password,documentUrl);
 
       if (result.status) {
-        req.session.dotp = result.otp;
-        console.log('otp', req.session.dotp);
-        
         return res.status(200).json({
           success: true,
           message: "OTP send to your email",
@@ -71,22 +58,20 @@ export class DoctorController {
     next: NextFunction
   ): Promise<Response> {
     try {
-      const { otp } = req.body;
-      const sessionOtp = req.session.dotp;
-      const doctorData = req.session.doctorData;
-      console.log('otp', sessionOtp);
-      console.log('data', doctorData);
-
-      if (!doctorData) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No signup data found" });
-      }
-
-      if (otp !== sessionOtp) {
+      const { otp, email } = req.body;
+      console.log(otp, email);
+      
+      const tempUser = await tempModel.findOne({ email }); 
+      if (otp !== tempUser?.otp) {
         return res.json({ success: false, message: "Incorrect OTP" });
       }
-
+      const doctorData = {
+        doctorName : tempUser?.doctorName,
+        email: tempUser?.email,
+        mobileNumber: tempUser?.mobileNumber,
+        password: tempUser?.password,
+        document: tempUser?.document
+      }
       const result = await this.DoctorUseCase.saveUser(doctorData as IDoctor);
       if (result.status) {
         res.cookie("doc_auth_token", result.token, { httpOnly: true, secure: true, sameSite: 'none', path: '/' });
@@ -117,21 +102,9 @@ export class DoctorController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const email = req.session.doctorData?.email;
-      if (!email) {
-        console.error(
-          "Email is missing in doctorData:",
-          req.session.doctorData
-        );
-
-        return res.status(400).json({
-          success: false,
-          message: "Email is missing in session",
-        });
-      }
+      const {email} = req.body
       const result = await this.DoctorUseCase.sendOtp(email);
       if (result.status) {
-        req.session.dotp = result.otp;
         return res.status(200).json({
           success: true,
           message: "OTP send to your email",
@@ -190,8 +163,6 @@ export class DoctorController {
       const { email } = req.body;
       const result = await this.DoctorUseCase.verifyEmail(email);
       if (result.status) {
-        req.session.dEmail = email;
-        req.session.dotp = result.otp;
         return res
           .status(200)
           .json({
@@ -219,12 +190,11 @@ export class DoctorController {
     next: NextFunction
   ): Promise<Response> {
     try {
-      const { otp } = req.body;
-      const sessionOtp = req.session.dotp;
-
-      if (otp !== sessionOtp) {
+      const { otp, email } = req.body;
+      const tempUser = await tempModel.findOne({ email }); 
+      if (otp !== tempUser?.otp) {
         return res.json({ success: false, message: "Incorrect OTP" });
-      } else {
+      }else {
         return res.json({
           success: true,
           message: "OTP is verified, create a new password!",
@@ -245,16 +215,15 @@ export class DoctorController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> {
-    const email = req.session.dEmail as string;
+    const {email} = req.body;
     if (!email) {
       return res
         .status(400)
-        .json({ success: false, message: "No email found in session." });
+        .json({ success: false, message: "Email not found." });
     }
     try {
       const result = await this.DoctorUseCase.sendOtp(email);
       if (result.status) {
-        req.session.dotp = result.otp;
         return res.status(200).json({
           success: true,
           message: "OTP send to your email",
@@ -277,8 +246,8 @@ export class DoctorController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { password } = req.body;
-      const email = req.session.dEmail;
+      const { userDetails, email } = req.body;
+      const { password, confirmPassword } = userDetails;
       if (!email) {
         return res
           .status(400)
@@ -286,6 +255,7 @@ export class DoctorController {
       }
       const result = await this.DoctorUseCase.savePassword(email, password);
       if (result.status) {
+        await tempModel.findOneAndDelete({email})
         return res.status(200).json({ success: true, message: result.message });
       } else {
         return res

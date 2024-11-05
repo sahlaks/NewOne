@@ -48,11 +48,6 @@ function DoctorSignup() {
       newErrors.mobileNumber = "Phone number cannot be all zeros";
     }
 
-    // // License-grade validation
-    // if (!doctorDetails.licenseGrade) {
-    //   newErrors.licenseGrade = "License Grade is required!!!";
-    // }
-
     // Password validation
     if (!doctorDetails.password) {
       newErrors.password = "Password is required";
@@ -135,6 +130,7 @@ function DoctorSignup() {
         console.log("response", response);
 
         if (response.data.success) {
+          localStorage.setItem('docemail',doctorDetails.email)
           setDoctorDetails({
             doctorName: "",
             email: "",

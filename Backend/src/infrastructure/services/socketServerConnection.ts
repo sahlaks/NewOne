@@ -64,6 +64,12 @@ export const createSocketChatConnection = (server: any) => {
       }
     );
 
+    socket.on("newDoctorChat", ({ doctorId }) => {
+      io.emit("updateChatList", {
+        doctorId: doctorId,
+      });
+  });
+
     //typing event
     socket.on("typing", ({ senderId, receiverId }) => {
       if (users[receiverId]) {

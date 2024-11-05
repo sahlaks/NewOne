@@ -20,6 +20,7 @@ import { ISlotRepository } from "./interface/ISlotRepository";
 import INotification from "../domain/entity/notification";
 import IFeedback from "../domain/entity/feedback";
 import IReview from "../domain/entity/review";
+import tempModel from "../infrastructure/databases/temporaryModel";
 
 export class ParentUseCase {
   private iparentRepository: IParentRepository;
@@ -42,8 +43,7 @@ export class ParentUseCase {
     req: Request
   ): Promise<{ status: boolean; message?: string }> {
     try {
-      const signupData = req.session.signupData;
-      const email = signupData?.email as string;
+      let { parentName, email, mobileNumber, password } = req.body;
       //check user
       const existingUser = await this.iparentRepository.findParentByEmail(
         email
@@ -53,7 +53,18 @@ export class ParentUseCase {
       }
 
       const otp = generateOTP();
-      req.session.otp = otp;
+      //Hash password
+      const salt = await bcrypt.genSalt(10);
+      password = await bcrypt.hash(password, salt);
+      const tempUser = new tempModel({
+        parentName,
+        email,
+        mobileNumber,
+        password,
+        otp
+      })
+      await tempUser.save()
+      
       const mailOptions = {
         email,
         subject: "Your OTP for CalmNest Signup",
@@ -81,11 +92,7 @@ export class ParentUseCase {
     refreshtoken?: string;
   }> {
     try {
-      // Hash the password before saving
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(data.password, salt);
       data.isLoggin = true;
-
       const savedUser = await this.iparentRepository.saveUserDetails(data);
       if (savedUser) {
         const accesstoken = jwtCreation(savedUser._id, 'Parent');
@@ -169,9 +176,10 @@ export class ParentUseCase {
       const otp = generateOTP();
       const mailOptions = {
         email,
-        subject: "Your OTP for CalmNest",
+        subject: "Your Resend OTP for CalmNest",
         code: otp,
       };
+      await tempModel.findOneAndUpdate({email: email}, {$set: {otp: otp}},{new: true, upsert: false})
       await this.sendEmail.sendEmail(mailOptions);
       return { status: true, message: "OTP sent successfully", otp };
     } catch (error) {
@@ -188,6 +196,11 @@ export class ParentUseCase {
       const user = await this.iparentRepository.findParentByEmail(email);
       if (user) {
         const otp = generateOTP();
+        const tempUser = new tempModel({
+          email: email,
+          otp: otp
+        })
+        await tempUser.save()
         const mailOptions = {
           email,
           subject: "Your OTP for changing password",
@@ -486,6 +499,17 @@ async fetchingNotifications(id: string): Promise<{status: boolean; message?: str
     return {status:false, message: 'Failed to fetch notifications'}
   } catch (error) {
     return { status: false, message: "An error occured during fetching"}
+  }
+}
+
+/*.......................................clear notifications............................................*/
+async clearAllNotifications(id: string): Promise<{status: boolean; message?: string}>{
+  try{
+    const res = await this.iparentRepository.clearAll(id)
+    if(res.success) return {status: true, message: res.message}
+    return {status: false}
+  }catch(error){
+    return {status: false}
   }
 }
 

@@ -13,6 +13,7 @@ import ISlot from "../domain/entity/slots";
 import { SlotRepository } from "../infrastructure/repository/slotRepository";
 import INotification from "../domain/entity/notification";
 import IAppointment from "../domain/entity/Appointment";
+import tempModel from "../infrastructure/databases/temporaryModel";
 
 export class DoctorUseCase {
   private idoctorRepository: IDoctorRepository;
@@ -27,7 +28,7 @@ export class DoctorUseCase {
 
   /*............................check email registered or not, then send otp............................*/
   async registrationDoctor(
-    email: string
+    doctorName: string,email: string, mobileNumber: string, password: string, document: string
   ): Promise<{ status: boolean; message?: string; otp?: string }> {
     try {
       // Check if the user already exists
@@ -40,7 +41,20 @@ export class DoctorUseCase {
 
       // Generate and store OTP securely
       const otp = generateOTP();
-
+      const salt = await bcrypt.genSalt(10);
+      password = await bcrypt.hash(password, salt);
+      const tempUser = new tempModel({
+        doctorName,
+        email,
+        mobileNumber,
+        password,
+        document,
+        otp
+      })
+      await tempUser.save()
+      console.log('user', tempUser);
+      
+      
       // Send email with OTP
       const mailOptions = {
         email,
@@ -71,10 +85,6 @@ export class DoctorUseCase {
     refreshtoken?: string;
   }> {
     try {
-      // Hash the password before saving
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(data.password, salt);
-
       const savedUser = await this.idoctorRepository.saveUserDetails(data);
 
       if (savedUser) {
@@ -111,6 +121,7 @@ export class DoctorUseCase {
         subject: "Your OTP for CalmNest Doctor Signup",
         code: otp,
       };
+      await tempModel.findOneAndUpdate({email: email}, {$set: {otp: otp}},{new: true, upsert: false})
       await this.sendEmail.sendEmail(mailOptions);
       return { status: true, message: "OTP sent successfully", otp };
     } catch (error) {
@@ -189,6 +200,11 @@ export class DoctorUseCase {
 
       if (user) {
         const otp = generateOTP();
+        const tempUser = new tempModel({
+          email: email,
+          otp: otp
+        })
+        await tempUser.save()
         const mailOptions = {
           email,
           subject: "Your OTP for changing password",
