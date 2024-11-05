@@ -28,7 +28,7 @@ const createServer = () => {
     try {
         const app = (0, express_1.default)();
         const corsOptions = {
-            origin: 'https://new-one-pi.vercel.app/',
+            origin: 'https://new-one-pi.vercel.app',
             credentials: true,
             methods: 'GET,PUT,PATCH,POST,DELETE',
             allowedHeaders: 'Content-Type,Authorization',
