@@ -33,8 +33,8 @@ const createCheckoutSession = (amount, appointmentId) => __awaiter(void 0, void 
                 },
             ],
             mode: "payment",
-            success_url: `https://new-one-pi.vercel.app/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `https://new-one-pi.vercel.app/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${process.env.NEW_URL}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.NEW_URL}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
             metadata: {
                 appointmentId: appointmentId,
             },
