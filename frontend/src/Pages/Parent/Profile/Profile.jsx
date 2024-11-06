@@ -245,6 +245,7 @@ const Profile = () => {
           if (image) {
             formData.append('image', selectedImage);
           }
+    console.log(formData);
     
         const response = await axiosInstance.post(
           "/api/parents/updateParentProfile",
