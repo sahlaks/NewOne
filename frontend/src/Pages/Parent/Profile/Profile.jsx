@@ -201,19 +201,19 @@ const Profile = () => {
     const emailError = validateEmail(email);
     const phoneError = validatePhone(phone);
     const numError = validateNum(num);
-    const streetError = validateStreet(street);
-    const cityError = validateCity(city);
-    const stateError = validateState(state);
-    const countryError = validateCountry(country);
+    // const streetError = validateStreet(street);
+    // const cityError = validateCity(city);
+    // const stateError = validateState(state);
+    // const countryError = validateCountry(country);
 
     setNameError(nameError);
     setEmailError(emailError);
     setPhoneError(phoneError);
     setNumError(numError);
-    setStreetError(streetError);
-    setCityError(cityError);
-    setStateError(stateError);
-    setCountryError(countryError);
+    // setStreetError(streetError);
+    // setCityError(cityError);
+    // setStateError(stateError);
+    // setCountryError(countryError);
     const kidsValid = validateKids();
 
     if (
@@ -221,10 +221,10 @@ const Profile = () => {
       !emailError &&
       !phoneError &&
       !numError &&
-      !streetError &&
-      !cityError &&
-      !stateError &&
-      !countryError &&
+      // !streetError &&
+      // !cityError &&
+      // !stateError &&
+      // !countryError &&
       kidsValid
     ) {
       try {
@@ -245,8 +245,7 @@ const Profile = () => {
           if (image) {
             formData.append('image', selectedImage);
           }
-    console.log(formData);
-    
+
         const response = await axiosInstance.post(
           "/api/parents/updateParentProfile",
           formData,
@@ -515,9 +514,9 @@ const Profile = () => {
       </div>
     </div>
   )}
-  <Footer />
   <FeedbackButton />
 </div>
+  <Footer />
 
     </>
   );
