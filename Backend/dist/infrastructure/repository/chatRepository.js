@@ -195,7 +195,6 @@ class ChatRepository {
                         $sort: { "lastMessage.createdAt": -1 }
                     },
                 ]);
-                console.log(chatList);
                 return chatList;
             }
             catch (error) {

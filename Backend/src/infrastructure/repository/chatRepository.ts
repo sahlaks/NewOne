@@ -177,7 +177,6 @@ export class ChatRepository implements IChatRepository {
                     $sort: { "lastMessage.createdAt": -1 }
                   },
               ])
-              console.log(chatList);
               
         return chatList
         } catch (error) {

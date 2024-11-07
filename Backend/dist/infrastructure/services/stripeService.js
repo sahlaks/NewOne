@@ -16,7 +16,6 @@ exports.retrieveSession = exports.createCheckoutSession = void 0;
 const stripe_1 = __importDefault(require("stripe"));
 const stripe = new stripe_1.default(process.env.STRIPE_SECRET_KEY);
 const createCheckoutSession = (amount, appointmentId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('CLIENT_URL:', process.env.NEW_URL);
     try {
         const session = yield stripe.checkout.sessions.create({
             payment_method_types: ["card"],
@@ -33,8 +32,8 @@ const createCheckoutSession = (amount, appointmentId) => __awaiter(void 0, void 
                 },
             ],
             mode: "payment",
-            success_url: `${process.env.NEW_URL}/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEW_URL}/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `https://new-one-pi.vercel.app/paymentsuccess?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `https://new-one-pi.vercel.app/paymentfailure?session_id={CHECKOUT_SESSION_ID}`,
             metadata: {
                 appointmentId: appointmentId,
             },

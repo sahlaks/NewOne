@@ -1,8 +1,7 @@
-// src/VideoCall.js
 import React, { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useSocket } from '../../Context/SocketContext';
-const roomId = "room1"; // Use a unique room ID for different calls
+const roomId = "room1";
 
 const VideoCalls = () => {
     const localVideoRef = useRef(null);

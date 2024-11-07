@@ -7,8 +7,6 @@ import pcitImage from "../../Public/banner.webp";
 
 function DoctorList() {
   const navigate = useNavigate();
-
-  // Array of services
   const services = [
     {
       title: "School Counseling",
