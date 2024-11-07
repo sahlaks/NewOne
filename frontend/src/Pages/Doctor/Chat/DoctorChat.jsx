@@ -455,7 +455,6 @@ const DoctorChat = () => {
           )}
         </div>
       </div>
-      <Footer />
        {showPopup && (
         <CustomPopup
           title="Delete Chat"

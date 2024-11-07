@@ -458,7 +458,6 @@ const ChatPage = () => {
           )}
         </div>
       </div>
-      <Footer />
 
       {showPopup && (
         <CustomPopup
