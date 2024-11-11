@@ -96,6 +96,13 @@ doctorRouter.post("/refreshToken", (req, res, next) => {
 doctorRouter.post("/slots", (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => {
     controller.saveSlots(req, res, next);
 });
+//rrule
+doctorRouter.post('/rruleslots', (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => {
+    controller.createSlotsUsingRule(req, res, next);
+});
+doctorRouter.post('/saveslots', (0, tokenValidation_1.validateDoctorTokens)('Doctor'), checkBlockedStatus_1.default, (req, res, next) => {
+    controller.saveCreatedSlots(req, res, next);
+});
 //fetch time slots
 doctorRouter.get("/fetchslots", (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => {
     controller.fetchSlots(req, res, next);

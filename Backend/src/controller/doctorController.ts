@@ -8,7 +8,10 @@ import { jwtCreation } from "../infrastructure/services/JwtCreation";
 import { AuthRequest } from "../domain/entity/types/auth";
 import uploadDocument from "../infrastructure/services/documentUpload";
 import tempModel from "../infrastructure/databases/temporaryModel";
+import ruleModel from "../infrastructure/databases/ruleModel";
+import { RRule, RRuleSet, Frequency } from 'rrule';
 
+type Weekday = 'SU' | 'MO' | 'TU' | 'WE' | 'TH' | 'FR' | 'SA';
 
 
 export class DoctorController {
@@ -402,6 +405,67 @@ async saveSlots(req: AuthRequest, res: Response, next: NextFunction): Promise<Re
   }
    
 }
+
+/*...............................................rrule................................................*/
+async createSlotsUsingRule(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+  const { freq, interval, days, startTime, endTime, until, count } = req.body;
+
+  const doctorId = req.user?.id as string;
+     const frequency = (RRule as any)[freq.toUpperCase()] as Frequency | undefined;
+    if (!frequency) {
+      return res.status(400).json({ message: "Invalid frequency type" });
+    }
+
+    const byWeekday = days.map((day: Weekday) => RRule[day as keyof typeof RRule]);
+
+    const rule = new RRule({
+      freq: frequency,
+      interval: interval,
+      byweekday: byWeekday,
+      dtstart: new Date(startTime),
+      until: until ? new Date(until) : undefined,
+      count: count ? count : undefined
+    });
+
+    const occurrences = rule.all();
+    const slots = occurrences.map(date => {
+      const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' }); 
+      return {
+        startTime: date,
+        endTime: new Date(date.getTime() + (new Date(endTime).getTime() - new Date(startTime).getTime())),
+        doctorId,
+        day: dayOfWeek, 
+      };
+    });
+  return res.status(200).json({success:true, data: slots})  
+}
+
+/*............................................save created slots................................................*/
+async saveCreatedSlots(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+  const createdSlots  = req.body;
+  const doc = req.user?.id as string
+  try {
+    const processedSlots = createdSlots.map((slot: any) => {
+      const startDateTime = new Date(slot.startTime);
+      const endDateTime = new Date(slot.endTime);
+
+      return {
+        date: startDateTime.toISOString().split('T')[0],
+        day: slot.day,
+        startTime: startDateTime.toTimeString().substring(0, 5),
+        endTime: endDateTime.toTimeString().substring(0, 5),
+        doctorId: new mongoose.Types.ObjectId(doc),
+      };
+    });
+  
+    const savedSlots = await ruleModel.insertMany(processedSlots);
+    if(savedSlots)  return res.status(200).json({ success: true, message: 'Slots created successfully!'});
+    return res.status(400).json({success: false})
+  } catch (error) {
+    next(error)
+  }
+}
+
 
 /*....................................fetch slots....................................*/
 async fetchSlots(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{

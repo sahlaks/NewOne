@@ -87,7 +87,7 @@ function DoctorLists() {
   };
 
   return (
-    <div className="bg-[#FAF5E9] min-h-screen p-6 flex flex-col items-center">
+    <div className="min-h-screen p-6 flex flex-col items-center">
       <HeaderSwitcher />
       {loading ? (
         <Loading />

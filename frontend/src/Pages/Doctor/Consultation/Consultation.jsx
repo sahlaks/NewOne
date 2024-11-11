@@ -158,12 +158,12 @@ function Consultation() {
   return (
     <>
       <DoctorHeader />
-      <div className="min-h-screen flex flex-col">
         {loading ? (
           <Loading />
         ) : (
           <>
-            <h1 className="text-2xl font-bold mb-5 text-center mt-20">
+           <div className="flex flex-col items-center justify-center mt-20 mb-10">
+            <h1 className="text-2xl font-bold mb-5 text-center">
               Appointments Details
             </h1>
 
@@ -287,6 +287,7 @@ function Consultation() {
                   </tbody>
                 </table>
               )}
+              </div>
             </div>
 
             {/* Card view for medium and small screens */}
@@ -387,7 +388,6 @@ function Consultation() {
             </div>
           </>
         )}
-      </div>
 
       <Pagination
         currentPage={currentPage}

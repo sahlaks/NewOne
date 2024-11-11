@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { ISlotRepository } from "../../usecases/interface/ISlotRepository";
 import ISlot from "../../domain/entity/slots";
 import slotModel from "../databases/slotModel";
+import ruleModel from "../databases/ruleModel";
 
 export class SlotRepository implements ISlotRepository{
 
@@ -26,7 +27,7 @@ export class SlotRepository implements ISlotRepository{
     async fetchSlots(id: string, page: number, limit: number): Promise<ISlot[] | null> {
         try{
             const skip = (page - 1) * limit;
-            const slots = await slotModel.find({doctorId:id}).skip(skip).limit(limit).sort({createdAt: -1});
+            const slots = await ruleModel.find({doctorId:id}).skip(skip).limit(limit).sort({createdAt: -1});
             return slots
         }catch(error){
             console.error("Error fetching slot:", error);
@@ -35,7 +36,7 @@ export class SlotRepository implements ISlotRepository{
     }
 
     async countDocuments(id: string): Promise<number> {
-        const res = await slotModel.countDocuments({doctorId: id})
+        const res = await ruleModel.countDocuments({doctorId: id})
         return res
         
     }
@@ -43,7 +44,7 @@ export class SlotRepository implements ISlotRepository{
     /*..........................................available slots for doctor..............................*/
     async fetchAvailableSlots(id: string): Promise<ISlot[] | null> {
         try{
-            const slots = await slotModel.find({doctorId: id, isAvailable: true, status: 'Available'})
+            const slots = await ruleModel.find({doctorId: id, isAvailable: true, status: 'Available'})
             return slots
         }catch(error){
             console.error("Error fetching slot:", error);
@@ -54,7 +55,7 @@ export class SlotRepository implements ISlotRepository{
     /*..................................update Slot availability......................................*/
     async updateSlot(slotId: string, doctorId: string): Promise<ISlot | null> {
         try{
-            const slot = await slotModel.findById(slotId)
+            const slot = await ruleModel.findById(slotId)
             if(slot){
                 if (slot.doctorId.toString() !== doctorId) return null;
                 slot.isAvailable = false;
@@ -71,7 +72,7 @@ export class SlotRepository implements ISlotRepository{
     /*.........................................delete slot................................*/
     async deleteSlot(slotId: string, doctorId: string): Promise<ISlot | null>{
         try{
-            const deletedSlot = await slotModel.findOneAndDelete({ _id: slotId, doctorId: doctorId });
+            const deletedSlot = await ruleModel.findOneAndDelete({ _id: slotId, doctorId: doctorId });
             return deletedSlot
         }catch(error){
             return null
@@ -81,7 +82,7 @@ export class SlotRepository implements ISlotRepository{
     /*.................................deleting slots.................................*/
         async deleteSlotsBefore(date: Date): Promise<number> {
             try {
-                const result = await slotModel.deleteMany({
+                const result = await ruleModel.deleteMany({
                     date: { $lt: date },
                 });
                 return result.deletedCount || 0;

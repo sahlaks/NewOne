@@ -159,9 +159,6 @@ function Planner() {
                   </tbody>
                 </table>
                 {/* Create More Slots button */}
-              </div>
-            )}
-          </div>
                 <div className="mt-6 text-center">
                   <button
                     className="bg-[#323232] text-white px-6 py-2 rounded-lg shadow-lg hover:bg-[#4A4A4A]"
@@ -170,6 +167,9 @@ function Planner() {
                     Create More Slots
                   </button>
                 </div>
+              </div>
+            )}
+          </div>
 
           {/* Custom Popup for Delete or Availability Toggle */}
           {showPopup && (

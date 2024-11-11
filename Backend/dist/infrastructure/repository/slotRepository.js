@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SlotRepository = void 0;
 const slotModel_1 = __importDefault(require("../databases/slotModel"));
+const ruleModel_1 = __importDefault(require("../databases/ruleModel"));
 class SlotRepository {
     /*............................................create slots......................................*/
     createSlot(data) {
@@ -39,7 +40,7 @@ class SlotRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const skip = (page - 1) * limit;
-                const slots = yield slotModel_1.default.find({ doctorId: id }).skip(skip).limit(limit).sort({ createdAt: -1 });
+                const slots = yield ruleModel_1.default.find({ doctorId: id }).skip(skip).limit(limit).sort({ createdAt: -1 });
                 return slots;
             }
             catch (error) {
@@ -50,7 +51,7 @@ class SlotRepository {
     }
     countDocuments(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield slotModel_1.default.countDocuments({ doctorId: id });
+            const res = yield ruleModel_1.default.countDocuments({ doctorId: id });
             return res;
         });
     }
@@ -58,7 +59,7 @@ class SlotRepository {
     fetchAvailableSlots(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const slots = yield slotModel_1.default.find({ doctorId: id, isAvailable: true, status: 'Available' });
+                const slots = yield ruleModel_1.default.find({ doctorId: id, isAvailable: true, status: 'Available' });
                 return slots;
             }
             catch (error) {
@@ -71,7 +72,7 @@ class SlotRepository {
     updateSlot(slotId, doctorId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const slot = yield slotModel_1.default.findById(slotId);
+                const slot = yield ruleModel_1.default.findById(slotId);
                 if (slot) {
                     if (slot.doctorId.toString() !== doctorId)
                         return null;
@@ -90,7 +91,7 @@ class SlotRepository {
     deleteSlot(slotId, doctorId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const deletedSlot = yield slotModel_1.default.findOneAndDelete({ _id: slotId, doctorId: doctorId });
+                const deletedSlot = yield ruleModel_1.default.findOneAndDelete({ _id: slotId, doctorId: doctorId });
                 return deletedSlot;
             }
             catch (error) {
@@ -102,7 +103,7 @@ class SlotRepository {
     deleteSlotsBefore(date) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield slotModel_1.default.deleteMany({
+                const result = yield ruleModel_1.default.deleteMany({
                     date: { $lt: date },
                 });
                 return result.deletedCount || 0;

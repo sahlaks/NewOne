@@ -3,6 +3,7 @@ import HeaderSwitcher from '../../../Components/Header/HeadSwitcher'
 import Loading from '../../../Components/Loading/Loading'
 import TimeSlotForm from '../../../Components/TimeSlots/TimeSlotsForm'
 import DoctorHeader from '../../../Components/Header/DoctorHeader'
+import CreateSlot from './rrule'
 
 function PlanningSlots() {
     const [loading,setLoading] = useState(false)
@@ -17,7 +18,7 @@ function PlanningSlots() {
             ) : (
                 <div className="min-h-screen p-10 flex mt-5">
                     <div >
-                        <TimeSlotForm/>
+                        <CreateSlot/>
                     </div>
                     <div>
                     

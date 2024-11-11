@@ -128,6 +128,15 @@ doctorRouter.post(
   }
 );
 
+//rrule
+doctorRouter.post('/rruleslots',  validateDoctorTokens("Doctor"), checkBlockedStatus, (req,res,next)=>{
+  controller.createSlotsUsingRule(req,res,next)
+})
+
+doctorRouter.post('/saveslots', validateDoctorTokens('Doctor'), checkBlockedStatus, (req,res,next) => {
+  controller.saveCreatedSlots(req,res,next)
+})
+
 //fetch time slots
 doctorRouter.get(
   "/fetchslots",

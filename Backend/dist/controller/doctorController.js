@@ -13,10 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorController = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
 const cloudinaryService_1 = require("../infrastructure/services/cloudinaryService");
 const tokenVerification_1 = require("../infrastructure/services/tokenVerification");
 const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
 const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
+const ruleModel_1 = __importDefault(require("../infrastructure/databases/ruleModel"));
+const rrule_1 = require("rrule");
 class DoctorController {
     constructor(DoctorUseCase) {
         this.DoctorUseCase = DoctorUseCase;
@@ -392,6 +395,66 @@ class DoctorController {
                 if (result.status)
                     return res.status(200).json({ success: true, message: result.message });
                 return res.status(400).json({ success: false, message: result.message });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    /*...............................................rrule................................................*/
+    createSlotsUsingRule(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const { freq, interval, days, startTime, endTime, until, count } = req.body;
+            const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            const frequency = rrule_1.RRule[freq.toUpperCase()];
+            if (!frequency) {
+                return res.status(400).json({ message: "Invalid frequency type" });
+            }
+            const byWeekday = days.map((day) => rrule_1.RRule[day]);
+            const rule = new rrule_1.RRule({
+                freq: frequency,
+                interval: interval,
+                byweekday: byWeekday,
+                dtstart: new Date(startTime),
+                until: until ? new Date(until) : undefined,
+                count: count ? count : undefined
+            });
+            const occurrences = rule.all();
+            const slots = occurrences.map(date => {
+                const dayOfWeek = date.toLocaleString('en-US', { weekday: 'long' });
+                return {
+                    startTime: date,
+                    endTime: new Date(date.getTime() + (new Date(endTime).getTime() - new Date(startTime).getTime())),
+                    doctorId,
+                    day: dayOfWeek,
+                };
+            });
+            return res.status(200).json({ success: true, data: slots });
+        });
+    }
+    /*............................................save created slots................................................*/
+    saveCreatedSlots(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const createdSlots = req.body;
+            const doc = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            try {
+                const processedSlots = createdSlots.map((slot) => {
+                    const startDateTime = new Date(slot.startTime);
+                    const endDateTime = new Date(slot.endTime);
+                    return {
+                        date: startDateTime.toISOString().split('T')[0],
+                        day: slot.day,
+                        startTime: startDateTime.toTimeString().substring(0, 5),
+                        endTime: endDateTime.toTimeString().substring(0, 5),
+                        doctorId: new mongoose_1.default.Types.ObjectId(doc),
+                    };
+                });
+                const savedSlots = yield ruleModel_1.default.insertMany(processedSlots);
+                if (savedSlots)
+                    return res.status(200).json({ success: true, message: 'Slots created successfully!' });
+                return res.status(400).json({ success: false });
             }
             catch (error) {
                 next(error);
