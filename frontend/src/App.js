@@ -44,6 +44,7 @@ import ParentAppointmentDetails from "./Pages/Parent/AppointmentDetails/Details"
 import NotFoundPage from "./Components/ErrorPages/NotFound";
 import ServerErrorPage from "./Components/ErrorPages/InternalServer";
 import { setNavigate } from "./utils/navigateHelper";
+import CreateSlot from "./Pages/Doctor/Planner/rrule";
 
 
 function App() {
@@ -260,7 +261,7 @@ function App() {
         path="/timeslotform"
         element={
           <ProtectedRoute allowedRoles={["doctor"]}>
-            <TimeSlotForm />
+            <CreateSlot />
           </ProtectedRoute>
         }
       />
