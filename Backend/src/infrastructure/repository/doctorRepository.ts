@@ -211,16 +211,17 @@ export class DoctorRepository implements IDoctorRepository {
   async fetchPatients(
     id: string,
     page: number,
-    limit: number
+    limit: number,
+    search: string
   ): Promise<{ data: IAppointment[]; total: number }> {
     const dObjectId = new mongoose.Types.ObjectId(id);
     const res = await appointmentModel.aggregate([
       {
         $match: {
           doctorId: dObjectId,
+
         },
       },
-
       {
         $group: {
           _id: { childName: "$name" },
@@ -239,6 +240,15 @@ export class DoctorRepository implements IDoctorRepository {
         $unwind: "$parentDetails",
       },
       {
+    $match: {
+      $or: [
+        { "childInfo.name": { $regex: search, $options: "i" } },  // Search by child's name
+        { "parentDetails.parentName": { $regex: search, $options: "i" } }, // Search by parent's name
+        { "parentDetails.email": { $regex: search, $options: "i" } },  // Search by parent's email
+      ],
+    },
+  },
+      {
         $project: {
           "childInfo.name": 1,
           "childInfo._id": 1,
@@ -255,9 +265,9 @@ export class DoctorRepository implements IDoctorRepository {
         },
       },
     ]);
-
     const data = res[0]?.data || [];
     const total = res[0]?.totalCount[0]?.count || 0;
+
     return { data, total };
   }
 }

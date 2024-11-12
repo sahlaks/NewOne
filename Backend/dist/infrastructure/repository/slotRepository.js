@@ -36,11 +36,21 @@ class SlotRepository {
         });
     }
     /*...................................fetch slots...........................................*/
-    fetchSlots(id, page, limit) {
+    fetchSlots(id, page, limit, search, available) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const skip = (page - 1) * limit;
-                const slots = yield ruleModel_1.default.find({ doctorId: id }).skip(skip).limit(limit).sort({ createdAt: -1 });
+                const filter = { doctorId: id };
+                if (available) {
+                    filter.isAvailable = available === 'true';
+                }
+                if (search) {
+                    filter.$or = [
+                        { day: { $regex: search, $options: 'i' } },
+                        { date: { $regex: search, $options: 'i' } }
+                    ];
+                }
+                const slots = yield ruleModel_1.default.find(filter).skip(skip).limit(limit).sort({ createdAt: -1 });
                 return slots;
             }
             catch (error) {

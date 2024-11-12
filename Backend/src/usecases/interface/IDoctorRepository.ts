@@ -21,6 +21,6 @@ export interface IDoctorRepository{
     updateDoctorwithApointment(id: string, doctorId: string): Promise<boolean>
     getNotifications(id: string): Promise<INotification[] | null>
     makeRead(id: string): Promise<boolean>
-    fetchPatients(id: string, page: number, limit: number): Promise<{data: IAppointment[], total: number}>
+    fetchPatients(id: string, page: number, limit: number, search: string): Promise<{data: IAppointment[], total: number}>
     
 }

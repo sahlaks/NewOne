@@ -24,10 +24,21 @@ export class SlotRepository implements ISlotRepository{
     }
 
     /*...................................fetch slots...........................................*/
-    async fetchSlots(id: string, page: number, limit: number): Promise<ISlot[] | null> {
+    async fetchSlots(id: string, page: number, limit: number, search: string, available: string): Promise<ISlot[] | null> {
         try{
             const skip = (page - 1) * limit;
-            const slots = await ruleModel.find({doctorId:id}).skip(skip).limit(limit).sort({createdAt: -1});
+            const filter: any = { doctorId: id };
+            if (available) {
+                filter.isAvailable = available === 'true';
+            }
+            if (search) {
+                filter.$or = [
+                    { day: { $regex: search, $options: 'i' } },
+                    { date: { $regex: search, $options: 'i' } }
+                ];
+            }
+
+            const slots = await ruleModel.find(filter).skip(skip).limit(limit).sort({createdAt: -1});
             return slots
         }catch(error){
             console.error("Error fetching slot:", error);
@@ -40,6 +51,7 @@ export class SlotRepository implements ISlotRepository{
         return res
         
     }
+
 
     /*..........................................available slots for doctor..............................*/
     async fetchAvailableSlots(id: string): Promise<ISlot[] | null> {

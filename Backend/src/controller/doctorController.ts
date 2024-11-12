@@ -472,9 +472,11 @@ async fetchSlots(req: AuthRequest, res: Response, next: NextFunction): Promise<R
   const doctorId = req.user?.id as string;
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 6;
+  const search = req.query.search as string
+  const available = req.query.available as string
 
   try{
-    const result = await this.DoctorUseCase.fetchSlotsDetails(doctorId,page,limit)
+    const result = await this.DoctorUseCase.fetchSlotsDetails(doctorId,page,limit,search,available)
     if(result.status) return res.status(200).json({success: true, message: result.message, slots: result.data,totalPages: result.totalPages, currentPage: page})
     return res.status(400).json({success: false, message: result.message})
   }catch(error){
@@ -539,8 +541,9 @@ async fetchPatients(req: AuthRequest, res: Response, next: NextFunction): Promis
   const doctorId = req.user?.id as string
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 6;
+  const search = req.query.search as string;
   try{
-    const result = await this.DoctorUseCase.getPatients(doctorId, page, limit)
+    const result = await this.DoctorUseCase.getPatients(doctorId, page, limit, search)
     if(result.status) return res.status(200).json({success: true, data: result.data, total: result.total, currentPage: page, totalPages: Math.ceil((result.total || 0) / limit)})
       return res.status(400).json({success: false})
   }catch(error){

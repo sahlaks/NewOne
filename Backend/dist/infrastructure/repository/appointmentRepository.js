@@ -17,7 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const appointmentModel_1 = __importDefault(require("../databases/appointmentModel"));
 const notificationModel_1 = __importDefault(require("../databases/notificationModel"));
 const prescriptionModel_1 = __importDefault(require("../databases/prescriptionModel"));
-const slotModel_1 = __importDefault(require("../databases/slotModel"));
+const ruleModel_1 = __importDefault(require("../databases/ruleModel"));
 class AppointmentRepository {
     /*..........................saving appointment as pending......................................*/
     saveData(appointment) {
@@ -38,7 +38,7 @@ class AppointmentRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const data = yield appointmentModel_1.default.findByIdAndUpdate(id, { paymentStatus: 'Success' }, { new: true });
-                const slot = yield slotModel_1.default.findByIdAndUpdate(data === null || data === void 0 ? void 0 : data.slotId, { status: 'Booked' });
+                const slot = yield ruleModel_1.default.findByIdAndUpdate(data === null || data === void 0 ? void 0 : data.slotId, { status: 'Booked' });
                 return data;
             }
             catch (error) {

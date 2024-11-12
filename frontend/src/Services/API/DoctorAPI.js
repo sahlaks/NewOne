@@ -32,10 +32,10 @@ export async function generateDoctorAccessToken(){
     }
   };
 
-  export const fetchSlotsFromDB = async (page, limit) => {
+  export const fetchSlotsFromDB = async (page, limit, search, available) => {
     try {
     const res = await axiosInstanceDoctor.get('/api/doctor/fetchslots', {params: { page: page, 
-      limit: limit  } , withCredentials: true });
+      limit: limit, search, available  } , withCredentials: true });
     return res.data
   } catch (error) {
     console.error('Error saving time slots:', error);
@@ -132,9 +132,9 @@ export const fetchPrescription = async (id) => {
 }
 
 /*...............................................patients..........................................*/
-export const getPatients = async (page, limit) => {
+export const getPatients = async (page, limit, search) => {
   const res = await axiosInstanceDoctor.get('/api/doctor/patients',{params: { page: page, 
-    limit: limit  } , withCredentials: true})
+    limit: limit, search  } , withCredentials: true})
   return res.data
 }
 

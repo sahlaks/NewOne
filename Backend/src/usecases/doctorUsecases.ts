@@ -376,9 +376,9 @@ export class DoctorUseCase {
   }
   
   /*............................................fetch slot..........................................*/
-  async fetchSlotsDetails(id: string, page: number, limit: number): Promise<{status: boolean; message?: string; data?: ISlot[], totalPages?: number}>{
+  async fetchSlotsDetails(id: string, page: number, limit: number, search: string, available: string): Promise<{status: boolean; message?: string; data?: ISlot[], totalPages?: number}>{
     try{
-      const res = await this.islotRepository.fetchSlots(id,page,limit)
+      const res = await this.islotRepository.fetchSlots(id,page,limit,search,available)
       const total = await this.islotRepository.countDocuments(id)
       const totalPages = Math.ceil(total / limit);
       if(res) return {status: true, message: 'Slots fetched successfully', data: res, totalPages: totalPages}
@@ -435,9 +435,9 @@ async updateNotification(id: string): Promise<{status: boolean; message?: string
 }
 
 /*...........................................patients.............................................*/
-async getPatients(id: string, page: number, limit: number): Promise<{status: boolean; data?: IAppointment[], total?: number}>{
+async getPatients(id: string, page: number, limit: number, search: string): Promise<{status: boolean; data?: IAppointment[], total?: number}>{
   try{
-    const res = await this.idoctorRepository.fetchPatients(id,page,limit)
+    const res = await this.idoctorRepository.fetchPatients(id,page,limit,search)
     if(res) return {status: true, data: res.data, total: res.total}
     return {status: false}
   } catch (error) {

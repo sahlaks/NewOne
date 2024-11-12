@@ -1,4 +1,3 @@
-// components/DoctorPatients.js
 import React, { useEffect, useState } from "react";
 import DoctorHeader from "../../../Components/Header/DoctorHeader";
 import Loading from "../../../Components/Loading/Loading";
@@ -9,18 +8,19 @@ import { useNavigate } from "react-router-dom";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const fetchPatients = async (page = 1, limit = 6) => {
+  const fetchPatients = async (page = 1, limit = 6, search = "") => {
     try {
-      setLoading(true);
-      const response = await getPatients(page, limit);
-      setPatients(response.data);
-      console.log(response);
+      console.log("Search Query:", search);
+      const response = await getPatients(page, limit, search);
+      console.log("Fetched Patients:", response.data);
       
+      setPatients(response.data);
       setTotalPages(response.totalPages);
       setCurrentPage(response.currentPage);
       setLoading(false);
@@ -30,12 +30,17 @@ const Patients = () => {
   };
 
   const handlePageChange = (page) => {
-    fetchPatients(page);
+    fetchPatients(page, 6, searchQuery); 
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); 
   };
 
   useEffect(() => {
-    fetchPatients();
-  }, []);
+    fetchPatients(currentPage, 6, searchQuery); 
+  }, [currentPage, searchQuery]);
 
   const viewMedicalHistory = (patient) => {
     navigate('/history', { state: { patient } });
@@ -49,7 +54,15 @@ const Patients = () => {
       ) : (
         <div className="flex flex-col items-center justify-center mt-20 mb-10">
           <h1 className="text-3xl font-bold mb-5">All Patients</h1>
-
+          <div className="flex space-x-4 mb-5">
+            <input
+              type="text"
+              placeholder="Search by day or date"
+              className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
+              value={searchQuery}
+              onChange={handleSearchChange} 
+            />
+          </div>
           <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md overflow-hidden">
             {patients.length === 0 ? (
               <p className="text-center text-xl font-semibold p-8">
@@ -70,9 +83,7 @@ const Patients = () => {
                   {patients.map((patient, index) => (
                     <tr
                       key={index}
-                      className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${
-                        index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'
-                      }`}
+                      className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'}`}
                     >
                       <td className="border px-4 py-2 text-center">
                         <img
@@ -106,7 +117,6 @@ const Patients = () => {
           </div>
         </div>
       )}
-
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}

@@ -10,7 +10,7 @@ import DoctorHeader from "../../../Components/Header/DoctorHeader";
 import Pagination from "../../../Components/Pagination/Pagination";
 
 function Planner() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [slots, setSlots] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -19,14 +19,17 @@ function Planner() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [available, setAvailable] = useState("");
 
-  const fetchSlots = async (page = 1, limit = 6) => {
-    setLoading(true);
+  const fetchSlots = async (page = 1, limit = 6, search = "", availableStatus = "") => {
     try {
-      const response = await fetchSlotsFromDB(page, limit);
-      setSlots(response.slots);
-      setTotalPages(response.totalPages);
-      setCurrentPage(response.currentPage);
+      const response = await fetchSlotsFromDB(page, limit, search, availableStatus);
+      if (response.success) {
+        setSlots(response.slots);
+        setTotalPages(response.totalPages);
+        setCurrentPage(response.currentPage);
+      }
     } catch (error) {
       toast.error("Error fetching slots");
       console.error("Error fetching slots:", error);
@@ -36,13 +39,12 @@ function Planner() {
   };
 
   const handlePageChange = (page) => {
-    fetchSlots(page);
+    fetchSlots(page, 6, searchQuery, available);
   };
 
   useEffect(() => {
-    fetchSlots();
-  }, []);
-
+    fetchSlots(currentPage, 6, searchQuery, available);
+  }, [currentPage, searchQuery, available]);
   const handleCreateSlots = () => {
     navigate("/timeslotform");
   };
@@ -100,6 +102,24 @@ function Planner() {
         <>
           <div className="flex flex-col items-center justify-center mt-20 mb-10">
             <h1 className="text-3xl font-bold mb-5">Selected Time Slots</h1>
+            <div className="flex space-x-4 mb-5">
+              <input
+                type="text"
+                placeholder="Search by day or date"
+                className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                value={available}
+                onChange={(e) => setAvailable(e.target.value)}
+              >
+                <option value="">Availability</option>
+                <option value="true">Available</option>
+                <option value="false">Not available</option>
+              </select>
+            </div>
 
             {slots.length === 0 ? (
               <div className="text-center">
@@ -112,12 +132,13 @@ function Planner() {
                 </button>
               </div>
             ) : (
-              <div className="w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] rounded-lg shadow-md overflow-hidden">
+              <div className="w-full md:w-3/4 lg:w-2/3 rounded-lg overflow-hidden">
                 <table className="table-auto border-collapse w-full">
                   <thead>
                     <tr className="bg-[#D3C5B7] text-gray-800">
                       <th className="px-4 py-2">No.</th>
                       <th className="px-4 py-2">Date</th>
+                      <th className="px-4 py-2">Day</th>
                       <th className="px-4 py-2">Start Time</th>
                       <th className="px-4 py-2">End Time</th>
                       <th className="px-4 py-2">Status</th>
@@ -129,6 +150,7 @@ function Planner() {
                       <tr key={slot._id} className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'}`}>
                         <td className="border px-4 py-2 text-center">{index + 1}</td>
                         <td className="border px-4 py-2 text-center">{slot.date}</td>
+                        <td className="border px-4 py-2 text-center">{slot.day}</td>
                         <td className="border px-4 py-2 text-center">{slot.startTime}</td>
                         <td className="border px-4 py-2 text-center">{slot.endTime}</td>
                         <td className="border px-4 py-2 text-center">

@@ -348,10 +348,10 @@ class DoctorUseCase {
         });
     }
     /*............................................fetch slot..........................................*/
-    fetchSlotsDetails(id, page, limit) {
+    fetchSlotsDetails(id, page, limit, search, available) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield this.islotRepository.fetchSlots(id, page, limit);
+                const res = yield this.islotRepository.fetchSlots(id, page, limit, search, available);
                 const total = yield this.islotRepository.countDocuments(id);
                 const totalPages = Math.ceil(total / limit);
                 if (res)
@@ -420,10 +420,10 @@ class DoctorUseCase {
         });
     }
     /*...........................................patients.............................................*/
-    getPatients(id, page, limit) {
+    getPatients(id, page, limit, search) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const res = yield this.idoctorRepository.fetchPatients(id, page, limit);
+                const res = yield this.idoctorRepository.fetchPatients(id, page, limit, search);
                 if (res)
                     return { status: true, data: res.data, total: res.total };
                 return { status: false };

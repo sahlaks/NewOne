@@ -7,6 +7,7 @@ import appointmentModel from "../databases/appointmentModel";
 import notificationModel from "../databases/notificationModel";
 import prescriptionModel from "../databases/prescriptionModel";
 import slotModel from "../databases/slotModel";
+import ruleModel from "../databases/ruleModel";
 
 export class AppointmentRepository implements IAppointmentRepository{
     
@@ -26,7 +27,7 @@ export class AppointmentRepository implements IAppointmentRepository{
     async updateData(id: string): Promise<IAppointment | null> {
         try{
             const data = await appointmentModel.findByIdAndUpdate(id,{paymentStatus: 'Success'},{new: true})
-            const slot = await slotModel.findByIdAndUpdate(data?.slotId,{status: 'Booked'})
+            const slot = await ruleModel.findByIdAndUpdate(data?.slotId,{status: 'Booked'})
             return data;
         } catch (error) {
           console.error('Error updating appointment:', error);

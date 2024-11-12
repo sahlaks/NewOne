@@ -468,8 +468,10 @@ class DoctorController {
             const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
+            const search = req.query.search;
+            const available = req.query.available;
             try {
-                const result = yield this.DoctorUseCase.fetchSlotsDetails(doctorId, page, limit);
+                const result = yield this.DoctorUseCase.fetchSlotsDetails(doctorId, page, limit, search, available);
                 if (result.status)
                     return res.status(200).json({ success: true, message: result.message, slots: result.data, totalPages: result.totalPages, currentPage: page });
                 return res.status(400).json({ success: false, message: result.message });
@@ -550,8 +552,9 @@ class DoctorController {
             const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
+            const search = req.query.search;
             try {
-                const result = yield this.DoctorUseCase.getPatients(doctorId, page, limit);
+                const result = yield this.DoctorUseCase.getPatients(doctorId, page, limit, search);
                 if (result.status)
                     return res.status(200).json({ success: true, data: result.data, total: result.total, currentPage: page, totalPages: Math.ceil((result.total || 0) / limit) });
                 return res.status(400).json({ success: false });

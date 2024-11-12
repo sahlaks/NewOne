@@ -193,7 +193,7 @@ class DoctorRepository {
         });
     }
     /*..............................patients from appointments..............................*/
-    fetchPatients(id, page, limit) {
+    fetchPatients(id, page, limit, search) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c;
             const dObjectId = new mongoose_1.default.Types.ObjectId(id);
@@ -219,6 +219,15 @@ class DoctorRepository {
                 },
                 {
                     $unwind: "$parentDetails",
+                },
+                {
+                    $match: {
+                        $or: [
+                            { "childInfo.name": { $regex: search, $options: "i" } }, // Search by child's name
+                            { "parentDetails.parentName": { $regex: search, $options: "i" } }, // Search by parent's name
+                            { "parentDetails.email": { $regex: search, $options: "i" } }, // Search by parent's email
+                        ],
+                    },
                 },
                 {
                     $project: {
