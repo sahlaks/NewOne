@@ -93,9 +93,11 @@ export class AppointmentController {
         const doctorId = req.user?.id as string
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 6;
-
+        const search = req.query.search as string
+        const status = req.query.status as string
+        const prescription = req.query.prescription as string
         try{
-            const result = await this.AppointmentUsecase.fetchDoctorsAppointments(doctorId,page,limit)
+            const result = await this.AppointmentUsecase.fetchDoctorsAppointments(doctorId,page,limit,search,status,prescription)
             if(result.status) return res.status(200).json({success: true, message: result.message, data: result.data, totalPages: result.totalPages, currentPage: page})
             return res.status(400).json({success: false})
         } catch(error){

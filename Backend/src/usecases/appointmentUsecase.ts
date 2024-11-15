@@ -66,8 +66,8 @@ async fetchAppointment(id: string, page: number, limit: number, search: string, 
     }
 
 /*.........................................fetch doctor's appointments...........................*/
-async fetchDoctorsAppointments(id: string, page: number, limit: number): Promise<{status: boolean; message?: string; data?: IAppointment[]; totalPages?: number}>{
-    const appointments = await this.iappointmentRepository.fetchDoctorAppointments(id,page,limit)
+async fetchDoctorsAppointments(id: string, page: number, limit: number, search: string, status: string, prescription: string): Promise<{status: boolean; message?: string; data?: IAppointment[]; totalPages?: number}>{
+    const appointments = await this.iappointmentRepository.fetchDoctorAppointments(id,page,limit,search,status,prescription)
     const total = await this.iappointmentRepository.countDoctorDocuments(id)
     const totalPages = Math.ceil(total / limit);
     if(appointments) return {status: true, message: 'Appointments fetched successfully!!', data: appointments, totalPages: totalPages}

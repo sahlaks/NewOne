@@ -53,9 +53,9 @@ export const deleteSlot = async (slotId) => {
   return res;
 }
 
-export const getAppointments = async (page, limit) => {
+export const getAppointments = async (page, limit, search, status, prescription) => {
   const res = await axiosInstanceDoctor.get('/api/doctor/getappointments',{params: { page: page, 
-    limit: limit  } , withCredentials: true })
+    limit: limit, search, status, prescription } , withCredentials: true })
   return res.data;
 }
 

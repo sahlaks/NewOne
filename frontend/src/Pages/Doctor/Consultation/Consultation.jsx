@@ -28,35 +28,55 @@ function Consultation() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [appointmentId, setAppointmentId] = useState(null);
-  const [selected, setSelected] = useState({});
+  const [selected, setSelected] = useState({}); 
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [status, setStatus] = useState("");
+  const [prescription, setPrescription] = useState("")
 
   const navigate = useNavigate()
 
-  const fetchAppointments = async (page = 1, limit = 6) => {
+  const fetchAppointments = async (page = 1, limit = 6, search='', status='', prescription='') => {
     try {
-      const res = await getAppointments(page, limit);
+      const res = await getAppointments(page, limit, search, status, prescription);
       if (res.success) {
         setAppointments(res.data);
         setAppointmentList(res.data);
         setTotalPages(res.totalPages);
         setCurrentPage(res.currentPage);
-        toast.success(res.message, { className: "custom-toast" });
+        
       }
     } catch (error) {
       console.error("Error fetching appointments:", error);
-      toast.error("Error fetching appointments");
+      
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = (page) => {
-    fetchAppointments(page);
+    fetchAppointments(page,6,searchQuery,status,prescription);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handlePrescription = (e) => {
+    setPrescription(e.target.value);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
-    fetchAppointments();
-  }, []);
+    fetchAppointments(currentPage,6,searchQuery,status,prescription);
+  }, [currentPage,searchQuery,status,prescription]);
+
 
   const updateAppointmentStatus = async (appointmentId, newStatus) => {
     try {
@@ -166,7 +186,35 @@ function Consultation() {
             <h1 className="text-2xl font-bold mb-5 text-center">
               Appointments Details
             </h1>
-
+            <div className="flex space-x-4 mb-5">
+              <input
+                type="text"
+                placeholder="Search Date or Time "
+                className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <option value="">Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                value={prescription}
+                onChange={handlePrescription}
+              >
+                <option value="">Prescription</option>
+                <option value="true">Added</option>
+                <option value="false">Not Added</option>
+              </select>
+            </div>
             {/* Table view for large screens */}
             <div className="hidden lg:block w-full md:w-3/4 lg:w-2/3 bg-[#E3D7CD] mx-auto">
               {appointmentList.length === 0 ? (

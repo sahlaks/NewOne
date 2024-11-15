@@ -89,10 +89,26 @@ export class AppointmentRepository implements IAppointmentRepository{
       }
       
     /*......................................fetch doctor's appointments............................*/
-    async fetchDoctorAppointments(id: string, page: number, limit: number): Promise<IAppointment[] | null> {
+    async fetchDoctorAppointments(id: string, page: number, limit: number, search: string, status: string, prescription: string): Promise<IAppointment[] | null> {
         try{
             const skip = (page - 1) * limit;
-            const appointments = await appointmentModel.find({doctorId:id,paymentStatus: "Success"}).skip(skip).limit(limit).sort({createdAt: -1})
+            const filter: any = { 
+                doctorId: id, 
+                paymentStatus: "Success" 
+            };
+            if (status) {
+                filter.appointmentStatus = status;
+            }
+            if (search) {
+                filter.$or = [
+                  { date: { $regex: search, $options: 'i' } },
+                  { startTime: { $regex: search, $options: 'i' } },
+                ]; 
+            }
+            if (prescription){
+                filter.prescription = prescription === "true";
+            }
+            const appointments = await appointmentModel.find(filter).skip(skip).limit(limit).sort({createdAt: -1})
             return appointments
         } catch(error){
             return null

@@ -121,8 +121,11 @@ class AppointmentController {
             const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
+            const search = req.query.search;
+            const status = req.query.status;
+            const prescription = req.query.prescription;
             try {
-                const result = yield this.AppointmentUsecase.fetchDoctorsAppointments(doctorId, page, limit);
+                const result = yield this.AppointmentUsecase.fetchDoctorsAppointments(doctorId, page, limit, search, status, prescription);
                 if (result.status)
                     return res.status(200).json({ success: true, message: result.message, data: result.data, totalPages: result.totalPages, currentPage: page });
                 return res.status(400).json({ success: false });
