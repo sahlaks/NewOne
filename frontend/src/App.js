@@ -46,7 +46,6 @@ import ServerErrorPage from "./Components/ErrorPages/InternalServer";
 import { setNavigate } from "./utils/navigateHelper";
 import CreateSlot from "./Pages/Doctor/Planner/rrule";
 
-
 function App() {
   // const navigate = useNavigate()
   //   useEffect(() => {
@@ -54,306 +53,312 @@ function App() {
   // }, [navigate]);
 
   return (
-    <>    
-    <h1></h1>
-    <Routes>
-      {/*public routes*/}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/services" element={<Services />} />
+    <>
+      <h1></h1>
+      <Routes>
+        {/*public routes*/}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
 
-      <Route
-        path="/notify"
-        element={
-          <RedirectIfLoggedIn>
-            <Notify />
-          </RedirectIfLoggedIn>
-        }
-      />
-      
-      <Route
-        path="/parent-login"
-        element={
-          <RedirectIfLoggedIn>
-            <ParentSignin />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/parent-signup"
-        element={
-          <RedirectIfLoggedIn>
-            <ParentSignup />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/otp"
-        element={
-          <RedirectIfLoggedIn>
-            <ParentOtp />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <RedirectIfLoggedIn>
-            <ForgotPassword />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/password-reset"
-        element={
-          <RedirectIfLoggedIn>
-            <PasswordReset />
-          </RedirectIfLoggedIn>
-        }
-      />
+        <Route
+          path="/notify"
+          element={
+            <RedirectIfLoggedIn>
+              <Notify />
+            </RedirectIfLoggedIn>
+          }
+        />
 
-      {/*protected routes */}
-      <Route
-        path="/myprofile"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/find-doctor" element={<DoctorLists />} />
+        <Route
+          path="/parent-login"
+          element={
+            <RedirectIfLoggedIn>
+              <ParentSignin />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/parent-signup"
+          element={
+            <RedirectIfLoggedIn>
+              <ParentSignup />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/otp"
+          element={
+            <RedirectIfLoggedIn>
+              <ParentOtp />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <RedirectIfLoggedIn>
+              <ForgotPassword />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/password-reset"
+          element={
+            <RedirectIfLoggedIn>
+              <PasswordReset />
+            </RedirectIfLoggedIn>
+          }
+        />
 
-      <Route
-        path="/doctor-details/:doctorId"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <DoctorDetails />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/confirm-appointment"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <ConfirmAppointment />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/doctor-details/:doctorId"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <DoctorDetails />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/paymentsuccess"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <PaymentSuccess />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/paymentfailure"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <PaymentFailure />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/appointments"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <ShowAppointments />
-          </ProtectedRoute>
-        }
-      />
+        {/*protected routes */}
+        <Route
+          path="/myprofile"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/find-doctor" element={<DoctorLists />} />
 
-      <Route
-        path="/appointments/details"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <ParentAppointmentDetails />
-          </ProtectedRoute>
-        }
-      />
-      
-      <Route
-        path="/chat"
-        element={
-          <ProtectedRoute allowedRoles={["parent"]}>
-            <ChatPage />
-          </ProtectedRoute>
-        }
-      />
-    
+        <Route
+          path="/doctor-details/:doctorId"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <DoctorDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/confirm-appointment"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <ConfirmAppointment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor-details/:doctorId"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <DoctorDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/paymentsuccess"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <PaymentSuccess />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/paymentfailure"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <PaymentFailure />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/appointments"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <ShowAppointments />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/appointments/details"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <ParentAppointmentDetails />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/doctor-login"
-        element={
-          <RedirectIfLoggedIn>
-            <DoctorSignin />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/doctor-forgotpassword"
-        element={
-          <RedirectIfLoggedIn>
-            <DForgotPassword />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/doctor-signup"
-        element={
-          <RedirectIfLoggedIn>
-            <DoctorSignup />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/d-otp"
-        element={
-          <RedirectIfLoggedIn>
-            <DoctorOtp />
-          </RedirectIfLoggedIn>
-        }
-      />
+        <Route
+          path="/chat"
+          element={
+            <ProtectedRoute allowedRoles={["parent"]}>
+              <ChatPage />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/verification"
-        element={
-          <RedirectIfLoggedIn>
-            <Verification />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/doctor-profile"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <DoctorProfile />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/doctor-change-password"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <DoctorChangePassword />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/planner"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <Planner />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/timeslotform"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <CreateSlot />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/patients"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <Patients />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/history"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <MedicalHistory />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/doctor-login"
+          element={
+            <RedirectIfLoggedIn>
+              <DoctorSignin />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/doctor-forgotpassword"
+          element={
+            <RedirectIfLoggedIn>
+              <DForgotPassword />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/doctor-signup"
+          element={
+            <RedirectIfLoggedIn>
+              <DoctorSignup />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/d-otp"
+          element={
+            <RedirectIfLoggedIn>
+              <DoctorOtp />
+            </RedirectIfLoggedIn>
+          }
+        />
 
-      <Route
-        path="/consultation"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <Consultation />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/consultation/details"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <AppointmentDetails />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/chatwithparent"
-        element={
-          <ProtectedRoute allowedRoles={["doctor"]}>
-            <DoctorChat />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/verification"
+          element={
+            <RedirectIfLoggedIn>
+              <Verification />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/doctor-profile"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctor-change-password"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorChangePassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/planner"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <Planner />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/timeslotform"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <CreateSlot />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <Patients />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <MedicalHistory />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route path="/admin" element={<AdminSignin />} />
-      <Route
-        path="/admin"
-        element={
-          <RedirectIfLoggedIn>
-            <AdminSignin />
-          </RedirectIfLoggedIn>
-        }
-      />
-      <Route
-        path="/admin/dashboard"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/parents"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <ParentManagement />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/doctors"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <DoctorManagement />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/consultation"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <Consultation />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/consultation/details"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <AppointmentDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/chatwithparent"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorChat />
+            </ProtectedRoute>
+          }
+        />
 
-  
-      <Route
-        path="/admin/unverifieddoc"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <UnverifiedManagement />
-          </ProtectedRoute>
-        }
-      />
-       <Route path="/404" element={<NotFoundPage />} />
-       <Route path="/500" element={<ServerErrorPage />} />
-       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        <Route
+          path="/my-dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DoctorDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/admin" element={<AdminSignin />} />
+        <Route
+          path="/admin"
+          element={
+            <RedirectIfLoggedIn>
+              <AdminSignin />
+            </RedirectIfLoggedIn>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/parents"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <ParentManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/doctors"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <DoctorManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/unverifieddoc"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <UnverifiedManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="/500" element={<ServerErrorPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
     </>
   );
 }
