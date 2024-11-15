@@ -46,11 +46,11 @@ const DoctorDashboard = () => {
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow-md">
                         <h2 className="text-gray-600">Scheduled Appointments</h2>
-                        <p className="text-3xl font-semibold text-yellow-500">12</p>
+                        <p className="text-3xl font-semibold text-yellow-500">{dashboardData.scheduled}</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow-md">
                         <h2 className="text-gray-600">Completed Appointments</h2>
-                        <p className="text-3xl font-semibold text-green-500">{dashboardData.scheduled}</p>
+                        <p className="text-3xl font-semibold text-green-500">{dashboardData.completed}</p>
                     </div>
                     <div className="bg-white p-4 rounded-lg shadow-md">
                         <h2 className="text-gray-600">Revenue</h2>
@@ -62,7 +62,7 @@ const DoctorDashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                     <div className="bg-white p-6 rounded-lg shadow-md col-span-2">
                         <h3 className="text-xl font-semibold mb-4">Appointments</h3>
-                        <p>Next Appointment: {dashboardData.latest ? `Patient ${dashboardData.latest.name} at ${dashboardData.latest.startTime}` : 'No upcoming appointments'}</p>
+                        <p>Next Appointment: {dashboardData.latest ? `Patient ${dashboardData.latest.name} at ${dashboardData.latest.startTime} on ${dashboardData.latest.date}` : 'No upcoming appointments'}</p>
                     </div>
 
                     {/* Revenue Analytics */}
