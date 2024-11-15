@@ -405,6 +405,20 @@ class DoctorUseCase {
             }
         });
     }
+    /*.......................................clear notifications............................................*/
+    clearAllNotifications(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield this.idoctorRepository.clearAll(id);
+                if (res.success)
+                    return { status: true, message: res.message };
+                return { status: false };
+            }
+            catch (error) {
+                return { status: false };
+            }
+        });
+    }
     /*........................................make read.............................................*/
     updateNotification(id) {
         return __awaiter(this, void 0, void 0, function* () {

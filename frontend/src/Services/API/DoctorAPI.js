@@ -155,3 +155,9 @@ export const fetchAllDetails = async () => {
   const res = await axiosInstanceDoctor.get(`/api/doctor/fetchDashboardData`,{withCredentials: true})
   return res.data
 }
+
+/*........................................clear notification................................*/
+export const clearNotification = async () => {
+  const res = await axiosInstanceDoctor.get(`/api/doctor/clearNotifications`,{withCredentials: true});
+  return res.data;
+}

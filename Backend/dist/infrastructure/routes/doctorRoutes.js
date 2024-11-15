@@ -127,6 +127,9 @@ doctorRouter.put("/:id/status", (0, tokenValidation_1.validateDoctorTokens)("Doc
 doctorRouter.get("/notifications/:id", (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     controller.getNotifications(req, res, next);
 }));
+doctorRouter.get("/clearNotifications", (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    controller.clearNotifications(req, res, next);
+}));
 //notification-read
 doctorRouter.post("/mark-notification-read", (0, tokenValidation_1.validateDoctorTokens)("Doctor"), checkBlockedStatus_1.default, (req, res, next) => {
     controller.changeToRead(req, res, next);

@@ -197,6 +197,16 @@ doctorRouter.get(
   }
 );
 
+doctorRouter.get(
+  "/clearNotifications",
+  validateDoctorTokens("Doctor"),
+  checkBlockedStatus,
+  async (req, res, next) => {
+    controller.clearNotifications(req, res, next);
+  }
+);
+
+
 //notification-read
 doctorRouter.post(
   "/mark-notification-read",

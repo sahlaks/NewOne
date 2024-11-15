@@ -422,6 +422,17 @@ async fetchingNotifications(id: string): Promise<{status: boolean; message?: str
   }
 }
 
+/*.......................................clear notifications............................................*/
+async clearAllNotifications(id: string): Promise<{status: boolean; message?: string}>{
+  try{
+    const res = await this.idoctorRepository.clearAll(id)
+    if(res.success) return {status: true, message: res.message}
+    return {status: false}
+  }catch(error){
+    return {status: false}
+  }
+}
+
 /*........................................make read.............................................*/
 async updateNotification(id: string): Promise<{status: boolean; message?: string}>{
   try{

@@ -21,6 +21,7 @@ export interface IDoctorRepository{
     collectDocData(skip: number, limit: number, isVerified: boolean): Promise<IDoctor[]>
     updateDoctorwithApointment(id: string, doctorId: string): Promise<boolean>
     getNotifications(id: string): Promise<INotification[] | null>
+    clearAll(id: string): Promise<{success: boolean, message: string}>
     makeRead(id: string): Promise<boolean>
     fetchPatients(id: string, page: number, limit: number, search: string): Promise<{data: IAppointment[], total: number}>
     fetchParentCount(id: string): Promise<number>

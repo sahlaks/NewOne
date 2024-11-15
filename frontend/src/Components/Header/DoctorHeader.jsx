@@ -7,7 +7,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { axiosInstanceDoctor } from '../../Services/AxiosConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { doctorLogout } from '../../Redux/Slice/authSlice';
-import { changeToRead, getNotifications } from '../../Services/API/DoctorAPI';
+import { changeToRead, clearNotification, getNotifications } from '../../Services/API/DoctorAPI';
 import NotificationList from '../Notifications/Notifications';
 import { useNotification } from '../../Context/NotificationContext';
 
@@ -56,6 +56,14 @@ const handleRead = async (notificationId) => {
     setUnreadCount(unreadCounts)
   } catch (error) {
     console.log('Failed to mark notification as read:', error);
+  }
+};
+
+const clearAllNotifications = async () => {
+  const res= await clearNotification()
+  if(res.success){
+    setNotifications([]); 
+    setUnreadCount(0); 
   }
 };
 
@@ -144,8 +152,13 @@ const handleNotificationsClose = () => {
 
             {/* Notification Modal */}
       <Dialog open={openNotificationsModal} onClose={handleNotificationsClose} fullWidth maxWidth="sm">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginRight:'20px' }}>
         <DialogTitle className='text-2xl font-bold'>Notifications</DialogTitle>
-        <DialogContent>
+            <Button onClick={clearAllNotifications} style={{ color: 'red', borderColor: 'red' }} variant="outlined">
+              Clear All
+            </Button>
+          </div>
+          <DialogContent>
           <List>
             {notifications.length > 0 ? (
               notifications.map((notification) => (

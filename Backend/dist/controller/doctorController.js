@@ -530,6 +530,22 @@ class DoctorController {
             }
         });
     }
+    /*...............................................clear.........................................*/
+    clearNotifications(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            try {
+                const result = yield this.DoctorUseCase.clearAllNotifications(doctorId);
+                if (result.status)
+                    return res.status(200).json({ success: true, message: result.message });
+                return res.status(400).json({ success: false });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
     /*................................................read notification....................................*/
     changeToRead(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {

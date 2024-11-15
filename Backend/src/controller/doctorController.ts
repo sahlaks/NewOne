@@ -523,6 +523,19 @@ async getNotifications(req: AuthRequest, res: Response, next: NextFunction): Pro
   }
 }
 
+/*...............................................clear.........................................*/
+async clearNotifications(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
+  const doctorId = req.user?.id as string;
+  try{
+    const result = await this.DoctorUseCase.clearAllNotifications(doctorId)
+    if(result.status) return res.status(200).json({success: true, message: result.message})
+    return res.status(400).json({success: false})
+  }catch(error){
+    next(error)
+  }
+}
+
+
 /*................................................read notification....................................*/
 async changeToRead(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
   const { notificationId } = req.body;
