@@ -478,13 +478,15 @@ const VideoCall = ({ onEndCall, user, appointment }) => {
                     title="Video session ended?"
                     message="Did the session complete successfully?"
                     onConfirm={confirmCompleted}
-                    onCancel={() => setIsDoctorModalOpen(false)}
+                    onCancel={() => {cleanupAndEndCall();
+                        setIsDoctorModalOpen(false)}}
                 />
             )}
 
             <ParentFeedbackModal
                 isOpen={isParentModalOpen}
-                onClose={() => setIsParentModalOpen(false)}
+                onClose={() => {cleanupAndEndCall();
+                    setIsParentModalOpen(false)}}
                 onSubmit={handleParentSubmitFeedback}
             />
         </>
