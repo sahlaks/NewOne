@@ -63,8 +63,9 @@ const DoctorProfile = () => {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [open, setOpen] = useState(false);
-  const [bio, setBio] = useState('');
-  const [bioError, setBioError] = useState('');
+  const [bio, setBio] = useState("");
+  const [bioError, setBioError] = useState("");
+  const [certificateUrl, setCertificateUrl] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,7 +73,7 @@ const DoctorProfile = () => {
       try {
         setLoading(true);
         const response = await axiosInstanceDoctor.get(
-          '/api/doctor/doctor-profile',
+          "/api/doctor/doctor-profile",
           {
             withCredentials: true,
           }
@@ -89,8 +90,9 @@ const DoctorProfile = () => {
         setCity(data.city || "");
         setState(data.state || "");
         setCountry(data.country || "");
-        setImage(data.image || "")
-        setBio(data.bio || "")
+        setImage(data.image || "");
+        setBio(data.bio || "");
+        setCertificateUrl(data.document || "");
       } catch (err) {
         setError("Failed to load doctor data");
       } finally {
@@ -102,7 +104,7 @@ const DoctorProfile = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    
+
     const maxSizeInBytes = 15 * 1024 * 1024;
     if (file) {
       const validImageTypes = ["image/jpeg", "image/png"];
@@ -118,7 +120,7 @@ const DoctorProfile = () => {
         //setIsCropperOpen(true);
         const reader = new FileReader();
         reader.onload = () => {
-          setSelectedImage(reader.result); 
+          setSelectedImage(reader.result);
           setIsCropperOpen(true);
         };
         reader.readAsDataURL(file);
@@ -134,12 +136,11 @@ const DoctorProfile = () => {
 
   const handleCropSubmit = (croppedImage) => {
     console.log("Cropped Image URL:", croppedImage);
-   setImage(URL.createObjectURL(croppedImage));
-    setSelectedImage(croppedImage)
+    setImage(URL.createObjectURL(croppedImage));
+    setSelectedImage(croppedImage);
     setIsCropperOpen(false);
   };
 
-  
   /*.......password change.........*/
   const handleClickOpen = () => {
     setOpen(true);
@@ -155,9 +156,9 @@ const DoctorProfile = () => {
 
   const validateBio = (value) => {
     if (!value.trim()) {
-      return 'Bio should not be empty'
+      return "Bio should not be empty";
     } else {
-      return '';
+      return "";
     }
   };
 
@@ -217,7 +218,7 @@ const DoctorProfile = () => {
         formData.append("city", city);
         formData.append("state", state);
         formData.append("country", country);
-        formData.append("bio", bio); 
+        formData.append("bio", bio);
 
         if (image) {
           formData.append("image", selectedImage);
@@ -228,7 +229,7 @@ const DoctorProfile = () => {
           formData,
           {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
             },
             withCredentials: true,
           }
@@ -251,8 +252,12 @@ const DoctorProfile = () => {
     };
   }, [image]);
 
-    return (
-      <>
+  const documentUrl = certificateUrl
+    ? `http://localhost:5000/${certificateUrl}`
+    : null;
+
+  return (
+    <>
       <div className="min-h-screen p-6 flex flex-col items-center justify-center bg-[#FAF5E9]">
         <DoctorHeader />
         {loading ? (
@@ -264,46 +269,50 @@ const DoctorProfile = () => {
                 <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                   <div className="text-[#323232]">
                     <p className="text-2xl font-bold">Personal Details</p>
-    
+
                     <div className="flex flex-col max-w-md p-6">
-                    <label htmlFor="imageInput" className="text-slate-400 cursor-pointer">
-    <input
-      type="file"
-      id="imageInput"
-      className="hidden"
-      accept="image/*"
-      onChange={handleImageChange}
-    />
-    <div className="relative">
-      <img
-        src={image || defaultImage}
-        alt="Doctor Profile"
-        className="flex-shrink-0 object-cover h-64 w-64 rounded-full dark:bg-gray-500"
-      />
-      {selectedImage && (
-        <ImageCropperModal
-          open={isCropperOpen}
-          onClose={handleCropperClose}
-          imageSrc={selectedImage}
-          onCropSubmit={handleCropSubmit}
-        />
-      )}
-      {image && (
-        <button
-          className="absolute top-0 right-0 p-2 bg-red-500 text-white rounded-md"
-          onClick={() => setImage(null)}
-        >
-          X
-        </button>
-      )}
-    </div>
-    {imageError && (
-      <p className="text-red-500 text-xs mt-1">{imageError}</p>
-    )}
-  </label>
-  
+                      <label
+                        htmlFor="imageInput"
+                        className="text-slate-400 cursor-pointer"
+                      >
+                        <input
+                          type="file"
+                          id="imageInput"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                        <div className="relative">
+                          <img
+                            src={image || defaultImage}
+                            alt="Doctor Profile"
+                            className="flex-shrink-0 object-cover h-64 w-64 rounded-full dark:bg-gray-500"
+                          />
+                          {selectedImage && (
+                            <ImageCropperModal
+                              open={isCropperOpen}
+                              onClose={handleCropperClose}
+                              imageSrc={selectedImage}
+                              onCropSubmit={handleCropSubmit}
+                            />
+                          )}
+                          {image && (
+                            <button
+                              className="absolute top-0 right-0 p-2 bg-red-500 text-white rounded-md"
+                              onClick={() => setImage(null)}
+                            >
+                              X
+                            </button>
+                          )}
+                        </div>
+                        {imageError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {imageError}
+                          </p>
+                        )}
+                      </label>
                     </div>
-    
+
                     <div>
                       <p className="text-xl text-gray-600">
                         Want to change your password?{" "}
@@ -317,11 +326,16 @@ const DoctorProfile = () => {
                       <DoctorChangePassword open={open} onClose={handleClose} />
                     </div>
                   </div>
-    
+
                   <div className="lg:col-span-2">
                     <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-2">
                       <div className="md:col-span-2">
-                        <label className="text-[#323232]-600 font-bold" htmlFor="full_name">Name</label>
+                        <label
+                          className="text-[#323232]-600 font-bold"
+                          htmlFor="full_name"
+                        >
+                          Name
+                        </label>
                         <input
                           type="text"
                           name="full_name"
@@ -333,11 +347,20 @@ const DoctorProfile = () => {
                             validateName(e.target.value);
                           }}
                         />
-                        {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
+                        {nameError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {nameError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div className="md:col-span-2">
-                        <label className="text-[#323232]-400 font-bold" htmlFor="bio">Bio</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="bio"
+                        >
+                          Bio
+                        </label>
                         <textarea
                           name="bio"
                           id="bio"
@@ -348,11 +371,17 @@ const DoctorProfile = () => {
                             validateBio(e.target.value);
                           }}
                         />
-                        {bioError && <p className="text-red-500 text-xs mt-1">{bioError}</p>}
+                        {bioError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {bioError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label htmlFor="email" className="font-bold">Email Address</label>
+                        <label htmlFor="email" className="font-bold">
+                          Email Address
+                        </label>
                         <input
                           type="text"
                           name="email"
@@ -364,11 +393,20 @@ const DoctorProfile = () => {
                             validateEmail(e.target.value);
                           }}
                         />
-                        {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
+                        {emailError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {emailError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="phone">Phone Number</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="phone"
+                        >
+                          Phone Number
+                        </label>
                         <input
                           type="text"
                           name="phone"
@@ -380,11 +418,20 @@ const DoctorProfile = () => {
                             validatePhone(e.target.value);
                           }}
                         />
-                        {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
+                        {phoneError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {phoneError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="age">Age</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="age"
+                        >
+                          Age
+                        </label>
                         <input
                           type="number"
                           name="age"
@@ -396,11 +443,20 @@ const DoctorProfile = () => {
                             validateAge(e.target.value);
                           }}
                         />
-                        {ageError && <p className="text-red-500 text-xs mt-1">{ageError}</p>}
+                        {ageError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {ageError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="gender">Gender</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="gender"
+                        >
+                          Gender
+                        </label>
                         <select
                           name="gender"
                           id="gender"
@@ -416,11 +472,20 @@ const DoctorProfile = () => {
                           <option value="Female">Female</option>
                           <option value="Other">Other</option>
                         </select>
-                        {genderError && <p className="text-red-500 text-xs mt-1">{genderError}</p>}
+                        {genderError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {genderError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="degree">Specialization</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="degree"
+                        >
+                          Specialization
+                        </label>
                         <input
                           type="text"
                           name="degree"
@@ -432,11 +497,20 @@ const DoctorProfile = () => {
                             validateDegree(e.target.value);
                           }}
                         />
-                        {degreeError && <p className="text-red-500 text-xs mt-1">{degreeError}</p>}
+                        {degreeError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {degreeError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="fees">Fees</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="fees"
+                        >
+                          Fees
+                        </label>
                         <input
                           type="number"
                           name="fees"
@@ -448,12 +522,21 @@ const DoctorProfile = () => {
                             validateFees(e.target.value);
                           }}
                         />
-                        {feesError && <p className="text-red-500 text-xs mt-1">{feesError}</p>}
+                        {feesError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {feesError}
+                          </p>
+                        )}
                       </div>
-    
+
                       {/* Address Fields */}
                       <div className="md:col-span-2">
-                        <label className="text-[#323232]-400 font-bold" htmlFor="street">Street Address</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="street"
+                        >
+                          Street Address
+                        </label>
                         <input
                           type="text"
                           name="street"
@@ -465,11 +548,20 @@ const DoctorProfile = () => {
                             validateStreet(e.target.value);
                           }}
                         />
-                        {streetError && <p className="text-red-500 text-xs mt-1">{streetError}</p>}
+                        {streetError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {streetError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="city">City</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="city"
+                        >
+                          City
+                        </label>
                         <input
                           type="text"
                           name="city"
@@ -481,11 +573,20 @@ const DoctorProfile = () => {
                             validateCity(e.target.value);
                           }}
                         />
-                        {cityError && <p className="text-red-500 text-xs mt-1">{cityError}</p>}
+                        {cityError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {cityError}
+                          </p>
+                        )}
                       </div>
-    
+
                       <div>
-                        <label className="text-[#323232]-400 font-bold" htmlFor="state">State</label>
+                        <label
+                          className="text-[#323232]-400 font-bold"
+                          htmlFor="state"
+                        >
+                          State
+                        </label>
                         <input
                           type="text"
                           name="state"
@@ -497,24 +598,27 @@ const DoctorProfile = () => {
                             validateState(e.target.value);
                           }}
                         />
-                        {stateError && <p className="text-red-500 text-xs mt-1">{stateError}</p>}
+                        {stateError && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {stateError}
+                          </p>
+                        )}
                       </div>
-    
-                      {/* <div>
-                        <label className="text-[#323232]-400" htmlFor="zipcode">Zip Code</label>
-                        <input
-                          type="text"
-                          name="zipcode"
-                          id="zipcode"
-                          className={`h-10 border mt-1 rounded-xl px-4 w-full ${zipcodeError ? "border-red-500" : "bg-gray-50"}`}
-                          value={zipcode}
-                          onChange={(e) => {
-                            setZipcode(e.target.value);
-                            validateZipcode(e.target.value);
-                          }}
-                        />
-                        {zipcodeError && <p className="text-red-500 text-xs mt-1">{zipcodeError}</p>}
-                      </div> */}
+                      {documentUrl && (
+                        <div className="mt-2">
+                          <p className="text-[#323232]-400 font-bold">
+                            Certificate Uploaded:
+                          </p>
+                          <a
+                            href={documentUrl}
+                            target="_blank"
+                            className="text-blue-500 hover:underline"
+                          >
+                            View Document
+                          </a>
+                        </div>
+                      )}
+                      
                     </div>
                     <button
                       type="button"
@@ -530,11 +634,9 @@ const DoctorProfile = () => {
           </div>
         )}
       </div>
-      <Footer/>
-      </>
-      
-    );
-  
+      <Footer />
+    </>
+  );
 };
 
 export default DoctorProfile;
