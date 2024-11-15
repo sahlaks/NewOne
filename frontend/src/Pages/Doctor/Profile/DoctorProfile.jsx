@@ -173,7 +173,6 @@ const DoctorProfile = () => {
     const streetError = validateStreet(street);
     const cityError = validateCity(city);
     const stateError = validateState(state);
-    const countryError = validateCountry(country);
     const bioError = validateBio(bio);
 
     setNameError(nameError);
@@ -186,7 +185,6 @@ const DoctorProfile = () => {
     setStreetError(streetError);
     setCityError(cityError);
     setStateError(stateError);
-    setCountryError(countryError);
     setBioError(bioError);
 
     if (
@@ -200,7 +198,6 @@ const DoctorProfile = () => {
       !streetError &&
       !cityError &&
       !stateError &&
-      !countryError &&
       !bioError
     ) {
       try {
@@ -217,7 +214,6 @@ const DoctorProfile = () => {
         formData.append("street", street);
         formData.append("city", city);
         formData.append("state", state);
-        formData.append("country", country);
         formData.append("bio", bio);
 
         if (image) {
