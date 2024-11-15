@@ -180,6 +180,9 @@ function ConfirmAppointment() {
                           value={selectedChildId}
                           onChange={(e) => setSelectedChildId(e.target.value)}
                         >
+                          <option value="" disabled>
+                            Choose a child
+                          </option>
                           {children.map((child) => (
                             <option key={child._id} value={child._id}>
                               {child.name}
