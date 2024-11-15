@@ -41,6 +41,10 @@ class SlotRepository {
             try {
                 const skip = (page - 1) * limit;
                 const filter = { doctorId: id };
+                const today = new Date();
+                const formattedToday = today.toISOString().split('T')[0];
+                today.setHours(0, 0, 0, 0);
+                filter.date = { $gte: formattedToday };
                 if (available) {
                     filter.isAvailable = available === 'true';
                 }
@@ -86,7 +90,7 @@ class SlotRepository {
                 if (slot) {
                     if (slot.doctorId.toString() !== doctorId)
                         return null;
-                    slot.isAvailable = false;
+                    slot.isAvailable = !slot.isAvailable;
                     yield slot.save();
                     return slot;
                 }

@@ -11,7 +11,7 @@ const RedirectIfLoggedIn = ({ children }) => {
       case 'parent':
         return <Navigate to="/" replace />;
       case 'doctor':
-        return <Navigate to="/" replace />;
+        return <Navigate to="/my-dashboard" replace />;
       case 'admin':
         return <Navigate to="/admin/dashboard" replace />;
       default:

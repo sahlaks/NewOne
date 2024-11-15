@@ -56,8 +56,8 @@ async updateFailurePayment(id: string): Promise<{status: boolean; message?: stri
     }
 
 /*.........................................get appointments.......................................*/
-async fetchAppointment(id: string, page: number, limit: number): Promise<{status: boolean; message?: string; data?: IAppointment[]; totalPages?: number}>{
-    const appointments = await this.iappointmentRepository.fetchAppointments(id,page,limit)
+async fetchAppointment(id: string, page: number, limit: number, search: string, status: string): Promise<{status: boolean; message?: string; data?: IAppointment[]; totalPages?: number}>{
+    const appointments = await this.iappointmentRepository.fetchAppointments(id,page,limit,search,status)
     const totalAppointments = await this.iappointmentRepository.countDocuments(id)
     const totalPages = Math.ceil(totalAppointments / limit);
     if(appointments) return {status:true, message: 'Appointments details fetched successfully', data: appointments, totalPages: totalPages}

@@ -7,6 +7,8 @@ import notificationModel from "../databases/notificationModel";
 import INotification from "../../domain/entity/notification";
 import IAppointment from "../../domain/entity/Appointment";
 import appointmentModel from "../databases/appointmentModel";
+import reviewModel from "../databases/reviewModel";
+import IReview from "../../domain/entity/review";
 
 export class DoctorRepository implements IDoctorRepository {
   /*..........................................verify with email.............................................*/
@@ -270,4 +272,91 @@ export class DoctorRepository implements IDoctorRepository {
 
     return { data, total };
   }
+
+  /*................................dashboard data...............................*/
+  async fetchParentCount(id: string): Promise<number> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const count = await appointmentModel.aggregate([
+      {$match: {doctorId: objectId}},
+      {$group: {_id:"$name"}},
+      { $count: "Count" }
+    ])
+    return count[0]?.Count || 0;
+  }
+
+  async countScheduled(id: string): Promise<number> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const count = await appointmentModel.aggregate([
+      {$match:{doctorId: objectId, appointmentStatus: 'Scheduled'}},
+      {$count: 'Count'}
+    ])
+    return count[0]?.Count || 0;
+  }
+
+  async countCompleted(id: string): Promise<number> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const count = await appointmentModel.aggregate([
+      {$match:{doctorId: objectId, appointmentStatus: 'Completed'}},
+      {$count: 'Count'}
+    ])
+    return count[0]?.Count || 0;
+  }
+
+  async revenue(id: string): Promise<number> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const total = await appointmentModel.aggregate([
+      {$match:{doctorId: objectId,  appointmentStatus: { $in: ["Completed", "Scheduled"] }}},
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$fees" }
+        }
+      }
+    ])
+    return total[0]?.totalRevenue || 0;
+  }
+
+  async latest(id: string): Promise<IAppointment | null> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const latest = await appointmentModel.findOne({
+      doctorId: objectId
+    }).sort({createdAt: -1}).limit(1).exec()
+    return latest
+  }
+
+  async analytics(id: string): Promise<{ totalRevenue: number; totalAppointments: number;}> {
+    const objectId = new mongoose.Types.ObjectId(id);
+    const result = await appointmentModel.aggregate([
+      { $match: { doctorId: objectId, appointmentStatus: { $in: ["Completed", "Scheduled"] } } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$fees" },
+          totalAppointments: { $sum: 1 }
+        }
+      }
+    ]);
+    return {
+      totalRevenue: result[0]?.totalRevenue || 0,
+      totalAppointments: result[0]?.totalAppointments || 0,
+    };
+  }
+
+  async countPending(id: string): Promise<number> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    const count = await appointmentModel.aggregate([
+      {$match:{doctorId: objectId, appointmentStatus: 'Pending'}},
+      {$count: 'Count'}
+    ])
+    return count[0]?.Count || 0;
+  }
+
+  async feedback(id: string): Promise<IReview | null> {
+    const objectId = new mongoose.Types.ObjectId(id)
+    return await reviewModel.findOne({
+      doctorId: objectId
+    }).sort({createdAt: -1}).exec()
+  }
+
+
 }

@@ -31,7 +31,7 @@ const handleSubmit = async (event) => {
             className: 'custom-toast',
           })
           dispatch(setDoctorCredential(response.data.data))
-          navigate('/'); 
+          navigate('/my-dashboard'); 
         }
         else
           navigate('/verification')

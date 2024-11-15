@@ -584,5 +584,33 @@ class DoctorController {
             });
         });
     }
+    /*............................fetch data for dashboard...........................*/
+    dashboardData(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const dId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+            try {
+                const response = yield this.DoctorUseCase.fetchDataForDashboard(dId);
+                if (response.status)
+                    return res
+                        .status(200)
+                        .json({
+                        success: true,
+                        count: response.count,
+                        scheduled: response.scheduled,
+                        completed: response.completed,
+                        revenue: response.revenue,
+                        latest: response.latest,
+                        analytics: response.analytics,
+                        pending: response.pending,
+                        feedback: response.feedback
+                    });
+                return res.status(400).json({ success: false, message: "Failed to retrieve dashboard data" });
+            }
+            catch (err) {
+                next(err);
+            }
+        });
+    }
 }
 exports.DoctorController = DoctorController;

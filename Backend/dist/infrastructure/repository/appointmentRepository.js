@@ -75,11 +75,25 @@ class AppointmentRepository {
         });
     }
     /*.........................................fetch appointments....................................*/
-    fetchAppointments(id, page, limit) {
+    fetchAppointments(id, page, limit, search, status) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const skip = (page - 1) * limit;
-                const appointments = yield appointmentModel_1.default.find({ parentId: id, paymentStatus: "Success" }).skip(skip).limit(limit).sort({ createdAt: -1 });
+                const filter = {
+                    parentId: id,
+                    paymentStatus: "Success"
+                };
+                if (status) {
+                    filter.appointmentStatus = status;
+                }
+                if (search) {
+                    filter.$or = [
+                        { day: { $regex: search, $options: 'i' } },
+                        { date: { $regex: search, $options: 'i' } },
+                        { doctorName: { $regex: search, $options: 'i' } },
+                    ];
+                }
+                const appointments = yield appointmentModel_1.default.find(filter).skip(skip).limit(limit).sort({ createdAt: -1 });
                 return appointments;
             }
             catch (error) {

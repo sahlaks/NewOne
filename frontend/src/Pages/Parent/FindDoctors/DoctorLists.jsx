@@ -56,6 +56,21 @@ function DoctorLists() {
     fetchDoctors(page);
   };
 
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleSpecializationChange = (e) => {
+    setSpecialization(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleMinRatingChange = (e) => {
+    setMinRating(e.target.value);
+    setCurrentPage(1);
+  };
+
   const renderStars = (average) => {
     const fullStars = Math.floor(average);
     const hasHalfStar = average - fullStars >= 0.5;
@@ -87,6 +102,7 @@ function DoctorLists() {
   };
 
   return (
+    <>
     <div className="min-h-screen p-6 flex flex-col items-center">
       <HeaderSwitcher />
       {loading ? (
@@ -101,12 +117,12 @@ function DoctorLists() {
                 placeholder="Search by doctor's name"
                 className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearch}
               />
               <select
                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 value={specialization}
-                onChange={(e) => setSpecialization(e.target.value)}
+                onChange={handleSpecializationChange}
               >
                 <option value="">Specializations</option>
                 <option value="MD">MD</option>
@@ -116,7 +132,7 @@ function DoctorLists() {
               <select
                 className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
                 value={minRating}
-                onChange={(e) => setMinRating(e.target.value)}
+                onChange={handleMinRatingChange}
               >
                 <option value="">Ratings</option>
                 <option value="1">1+ Stars</option>
@@ -155,8 +171,9 @@ function DoctorLists() {
           />
         </div>
       )}
-      <Footer />
     </div>
+      <Footer />
+      </>
   );
 }
 

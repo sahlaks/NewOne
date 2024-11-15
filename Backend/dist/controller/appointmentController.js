@@ -101,8 +101,10 @@ class AppointmentController {
             const parentId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
+            const search = req.query.search;
+            const status = req.query.status;
             try {
-                const result = yield this.AppointmentUsecase.fetchAppointment(parentId, page, limit);
+                const result = yield this.AppointmentUsecase.fetchAppointment(parentId, page, limit, search, status);
                 if (result.status)
                     return res.status(200).json({ success: true, message: result.message, data: result.data, totalPages: result.totalPages, currentPage: page });
                 return res.status(400).json({ success: false });

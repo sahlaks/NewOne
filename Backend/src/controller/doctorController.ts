@@ -577,4 +577,31 @@ async fetchPatients(req: AuthRequest, res: Response, next: NextFunction): Promis
       });
     });
   }
+
+  /*............................fetch data for dashboard...........................*/
+  async dashboardData(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void> {
+    const dId = req.user?.id as string
+    try{
+        const response = await this.DoctorUseCase.fetchDataForDashboard(dId)
+        
+        if(response.status) 
+          return res
+          .status(200)
+          .json({
+            success: true,
+            count: response.count,
+            scheduled: response.scheduled,
+            completed: response.completed,
+            revenue: response.revenue,
+            latest: response.latest,
+            analytics: response.analytics,
+            pending: response.pending,
+            feedback: response.feedback
+          });
+        return res.status(400).json({ success: false, message: "Failed to retrieve dashboard data" })
+    }catch(err){
+      next(err)
+    }
+  }
+  
 }

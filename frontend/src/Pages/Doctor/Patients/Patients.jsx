@@ -57,7 +57,7 @@ const Patients = () => {
           <div className="flex space-x-4 mb-5">
             <input
               type="text"
-              placeholder="Search by day or date"
+              placeholder="Search by child, parent or email"
               className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
               value={searchQuery}
               onChange={handleSearchChange} 

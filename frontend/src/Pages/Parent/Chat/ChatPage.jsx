@@ -339,17 +339,18 @@ const ChatPage = () => {
                   className="w-10 h-10 rounded-full mr-4 object-cover"
                 />
                 <div>
-                  <p className="font-semibold">{chat.doctorName}</p>
+                  <p className="font-semibold">
                   <span
-                    className={`text-sm ${
-                      onlineUsers[chat.doctorId]
-                        ? "text-green-500"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {onlineUsers[chat.doctorId] ? "Online" : "Offline"}
-                  </span>
-                  <p className="font-semibold">{chat.lastMessage?.message}</p>
+                      className={`h-3 w-3 mr-2 rounded-full inline-block ${
+                        onlineUsers[chat.doctorId]
+                        ? "bg-green-500"
+                        : "bg-gray-500"
+                      }`}
+                      title={onlineUsers[chat.doctorId] ? "Online" : "Offline"}
+                      ></span>
+                      {chat.doctorName}</p>
+                 
+                  <p className="text-black">{chat.lastMessage?.message}</p>
                   <span className="last-message-time text-xs text-gray-400">
                     {chat.lastMessage ? moment(chat.lastMessage.createdAt).fromNow() : ""}
                   </span>
@@ -366,6 +367,7 @@ const ChatPage = () => {
               </div>
             ))}
           </div>
+
         </div>
 
         {/* Right side: Chat area */}

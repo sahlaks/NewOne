@@ -174,4 +174,8 @@ doctorRouter.get('/appointment-history/:id/:name', (0, tokenValidation_1.validat
 doctorRouter.post("/logout", (req, res, next) => {
     controller.logoutDoctor(req, res, next);
 });
+//doctor dashboard
+doctorRouter.get('/fetchDashboardData', (0, tokenValidation_1.validateDoctorTokens)('Doctor'), checkBlockedStatus_1.default, (req, res, next) => {
+    controller.dashboardData(req, res, next);
+});
 exports.default = doctorRouter;

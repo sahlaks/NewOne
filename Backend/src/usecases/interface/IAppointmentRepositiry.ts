@@ -7,7 +7,7 @@ export interface IAppointmentRepository{
     updateData(id: string): Promise<IAppointment | null>
     updateFailure(id: string): Promise<IAppointment | null>
     sendNotification(notificationData: any): Promise<INotification | null>
-    fetchAppointments(id: string, page: number, limit: number): Promise<IAppointment[] | null>
+    fetchAppointments(id: string, page: number, limit: number, search: string, status: string): Promise<IAppointment[] | null>
     fetchDoctorAppointments(id: string, page: number, limit: number): Promise<IAppointment[] | null>
     updateAppointment(id: string, status: string): Promise<IAppointment | null>
     countDocuments(id: string): Promise<number>

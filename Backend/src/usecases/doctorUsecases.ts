@@ -445,6 +445,46 @@ async getPatients(id: string, page: number, limit: number, search: string): Prom
   }
 }
 
+/*...............................................dashboard..................................*/
+async fetchDataForDashboard(id: string): Promise<{ status: boolean;
+  count?: number;
+  scheduled?: number;
+  completed?: number;
+  revenue?: number;
+  latest?: IAppointment| null;
+  analytics?: any;
+  pending?: number;
+  feedback?: any;}> {
+  try {
+    
+    const count = await this.idoctorRepository.fetchParentCount(id);
+    const scheduled = await this.idoctorRepository.countScheduled(id);
+    const completed = await this.idoctorRepository.countCompleted(id);
+    const revenue = await this.idoctorRepository.revenue(id);
+    const latest = await this.idoctorRepository.latest(id);
+    const analytics = await this.idoctorRepository.analytics(id);
+    const pending = await this.idoctorRepository.countPending(id);
+    const feedback = await this.idoctorRepository.feedback(id);
+
+    console.log();
+    
+    return {
+      status: true,
+      count,
+      scheduled,
+      completed,
+      revenue,
+      latest,
+      analytics,
+      pending,
+      feedback
+    };
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    return { status: false };
+  }
+}
+
 }
 
 

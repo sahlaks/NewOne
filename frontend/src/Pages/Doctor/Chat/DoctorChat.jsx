@@ -340,12 +340,15 @@ const DoctorChat = () => {
                   className="w-10 h-10 rounded-full mr-4 object-cover"
                 />
                 <div>
-                  <p className="font-semibold">{chat.parentName}</p>
+                <p className="font-semibold">
                   <span
-                    className={`text-sm ${onlineUsers[chat.parentId] ? "text-green-500" : "text-gray-500"}`}
-                  >
-                    {onlineUsers[chat.parentId] ? "Online" : "Offline"}
-                  </span>
+                      className={`h-3 w-3 mr-2 rounded-full inline-block ${
+                        onlineUsers[chat.parentId]
+                        ? "bg-green-500"
+                        : "bg-gray-500"
+                      }`}
+                      title={onlineUsers[chat.parentId] ? "Online" : "Offline"}
+                      ></span>{chat.parentName}</p>
                   <p className="font-semibold">{chat.lastMessage.message}</p>
                   <span className="last-message-time text-xs text-gray-400">
                     {moment(chat.lastMessage.createdAt).fromNow()}

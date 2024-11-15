@@ -17,6 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const doctorModel_1 = __importDefault(require("../databases/doctorModel"));
 const notificationModel_1 = __importDefault(require("../databases/notificationModel"));
 const appointmentModel_1 = __importDefault(require("../databases/appointmentModel"));
+const reviewModel_1 = __importDefault(require("../databases/reviewModel"));
 class DoctorRepository {
     /*..........................................verify with email.............................................*/
     findDoctorByEmail(email) {
@@ -249,6 +250,105 @@ class DoctorRepository {
             const data = ((_a = res[0]) === null || _a === void 0 ? void 0 : _a.data) || [];
             const total = ((_c = (_b = res[0]) === null || _b === void 0 ? void 0 : _b.totalCount[0]) === null || _c === void 0 ? void 0 : _c.count) || 0;
             return { data, total };
+        });
+    }
+    /*................................dashboard data...............................*/
+    fetchParentCount(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const count = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId } },
+                { $group: { _id: "$name" } },
+                { $count: "Count" }
+            ]);
+            return ((_a = count[0]) === null || _a === void 0 ? void 0 : _a.Count) || 0;
+        });
+    }
+    countScheduled(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const count = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId, appointmentStatus: 'Scheduled' } },
+                { $count: 'Count' }
+            ]);
+            return ((_a = count[0]) === null || _a === void 0 ? void 0 : _a.Count) || 0;
+        });
+    }
+    countCompleted(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const count = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId, appointmentStatus: 'Completed' } },
+                { $count: 'Count' }
+            ]);
+            return ((_a = count[0]) === null || _a === void 0 ? void 0 : _a.Count) || 0;
+        });
+    }
+    revenue(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const total = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId, appointmentStatus: { $in: ["Completed", "Scheduled"] } } },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: { $sum: "$fees" }
+                    }
+                }
+            ]);
+            return ((_a = total[0]) === null || _a === void 0 ? void 0 : _a.totalRevenue) || 0;
+        });
+    }
+    latest(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const latest = yield appointmentModel_1.default.findOne({
+                doctorId: objectId
+            }).sort({ createdAt: -1 }).limit(1).exec();
+            return latest;
+        });
+    }
+    analytics(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const result = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId, appointmentStatus: { $in: ["Completed", "Scheduled"] } } },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: { $sum: "$fees" },
+                        totalAppointments: { $sum: 1 }
+                    }
+                }
+            ]);
+            return {
+                totalRevenue: ((_a = result[0]) === null || _a === void 0 ? void 0 : _a.totalRevenue) || 0,
+                totalAppointments: ((_b = result[0]) === null || _b === void 0 ? void 0 : _b.totalAppointments) || 0,
+            };
+        });
+    }
+    countPending(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            const count = yield appointmentModel_1.default.aggregate([
+                { $match: { doctorId: objectId, appointmentStatus: 'Pending' } },
+                { $count: 'Count' }
+            ]);
+            return ((_a = count[0]) === null || _a === void 0 ? void 0 : _a.Count) || 0;
+        });
+    }
+    feedback(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const objectId = new mongoose_1.default.Types.ObjectId(id);
+            return yield reviewModel_1.default.findOne({
+                doctorId: objectId
+            }).sort({ createdAt: -1 }).exec();
         });
     }
 }

@@ -151,10 +151,10 @@ export const updateFailure = async (sessionId) => {
 }
 
 /*...............................................get appointments.......................................*/
-export const getAppointments =  async(page, limit) => {
+export const getAppointments =  async(page, limit, search, status) => {
   try{
     const result = await axiosInstance.get('/api/parents/getappointments',{params: { page: page, 
-      limit: limit  } , withCredentials: true });
+      limit: limit, search, status  } , withCredentials: true });
     return result.data
   }catch(error){
     console.error('Error in fetching appointments', error);

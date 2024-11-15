@@ -149,3 +149,9 @@ export const deleteChat = async (id) => {
   const res = await axiosInstanceDoctor.delete(`/api/doctor/deletechats/${id}`,{withCredentials: true})
   return res.data;
 }
+
+/*..................................dashboard details...............................*/
+export const fetchAllDetails = async () => {
+  const res = await axiosInstanceDoctor.get(`/api/doctor/fetchDashboardData`,{withCredentials: true})
+  return res.data
+}

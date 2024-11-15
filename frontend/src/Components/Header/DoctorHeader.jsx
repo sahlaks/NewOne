@@ -90,7 +90,7 @@ const handleNotificationsClose = () => {
   const linkStyle = { color: '#323232', textDecoration: 'none' };
 
   const navItems = [
-    { text: 'Home', path: '/' },
+    { text: 'My Dashboard', path: '/my-dashboard' },
     { text: 'Planner', path: '/planner' },
     {text: 'Patients', path: '/patients'},
     { text: 'Consultations', path: '/consultation' },

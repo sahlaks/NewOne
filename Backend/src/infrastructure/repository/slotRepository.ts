@@ -28,6 +28,12 @@ export class SlotRepository implements ISlotRepository{
         try{
             const skip = (page - 1) * limit;
             const filter: any = { doctorId: id };
+
+            const today = new Date();
+            const formattedToday = today.toISOString().split('T')[0];
+            today.setHours(0, 0, 0, 0);
+            filter.date = { $gte: formattedToday };
+
             if (available) {
                 filter.isAvailable = available === 'true';
             }
@@ -70,7 +76,7 @@ export class SlotRepository implements ISlotRepository{
             const slot = await ruleModel.findById(slotId)
             if(slot){
                 if (slot.doctorId.toString() !== doctorId) return null;
-                slot.isAvailable = false;
+                 slot.isAvailable = !slot.isAvailable;
                 await slot.save();
                 return slot
             }

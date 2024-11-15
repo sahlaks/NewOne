@@ -433,5 +433,36 @@ class DoctorUseCase {
             }
         });
     }
+    /*...............................................dashboard..................................*/
+    fetchDataForDashboard(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const count = yield this.idoctorRepository.fetchParentCount(id);
+                const scheduled = yield this.idoctorRepository.countScheduled(id);
+                const completed = yield this.idoctorRepository.countCompleted(id);
+                const revenue = yield this.idoctorRepository.revenue(id);
+                const latest = yield this.idoctorRepository.latest(id);
+                const analytics = yield this.idoctorRepository.analytics(id);
+                const pending = yield this.idoctorRepository.countPending(id);
+                const feedback = yield this.idoctorRepository.feedback(id);
+                console.log();
+                return {
+                    status: true,
+                    count,
+                    scheduled,
+                    completed,
+                    revenue,
+                    latest,
+                    analytics,
+                    pending,
+                    feedback
+                };
+            }
+            catch (error) {
+                console.error("Error fetching dashboard data:", error);
+                return { status: false };
+            }
+        });
+    }
 }
 exports.DoctorUseCase = DoctorUseCase;

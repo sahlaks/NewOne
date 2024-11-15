@@ -59,9 +59,9 @@ class AppointmentUseCase {
         });
     }
     /*.........................................get appointments.......................................*/
-    fetchAppointment(id, page, limit) {
+    fetchAppointment(id, page, limit, search, status) {
         return __awaiter(this, void 0, void 0, function* () {
-            const appointments = yield this.iappointmentRepository.fetchAppointments(id, page, limit);
+            const appointments = yield this.iappointmentRepository.fetchAppointments(id, page, limit, search, status);
             const totalAppointments = yield this.iappointmentRepository.countDocuments(id);
             const totalPages = Math.ceil(totalAppointments / limit);
             if (appointments)

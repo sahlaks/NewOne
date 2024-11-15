@@ -23,11 +23,16 @@ function ShowAppointments() {
   const [appointmentId, setAppointmentId] = useState(null);
   const [selected, setSelected] = useState({});
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [status, setStatus] = useState("");
+
   const navigate = useNavigate();
 
-  const fetchAppointments = async (page = 1, limit = 6) => {
+  const fetchAppointments = async (page = 1, limit = 6,search='',status='') => {
     try {
-      const response = await getAppointments(page, limit);
+      console.log(page); 
+      
+      const response = await getAppointments(page, limit,search,status);
       if (response.success) {
         setAppointments(response.data);
         setTotalPages(response.totalPages);
@@ -43,12 +48,22 @@ function ShowAppointments() {
   };
 
   const handlePageChange = (page) => {
-    fetchAppointments(page);
+    fetchAppointments(page,6,searchQuery,status);
   };
 
   useEffect(() => {
-    fetchAppointments();
-  }, []);
+    fetchAppointments(currentPage,6,searchQuery,status);
+  }, [currentPage,searchQuery,status]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+  
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+    setCurrentPage(1);
+  };
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -117,11 +132,31 @@ function ShowAppointments() {
           <Loading />
         ) : (
           <>
-            <h1 className="text-3xl font-semibold text-center mt-16 mb-10">
+            <h1 className="text-3xl font-semibold text-center mt-10">
               Appointments Overview
             </h1>
+           <div className="hidden md:flex flex-col items-center justify-center">
+            <div className="flex space-x-4 mb-5">
+              <input
+                type="text"
+                placeholder="Search by day, date or doctor"
+                className="search-input px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+              <select
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <option value="">Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
 
-            <div className="hidden md:flex flex-col items-center justify-center mt-2 mb-10">
               {appointments.length === 0 ? (
                 <div className="text-center">
                   <p className="text-xl font-bold text-gray-700">
@@ -135,6 +170,7 @@ function ShowAppointments() {
                       <tr className="bg-[#D3C5B7] text-gray-800">
                         <th className="px-4 py-3 text-left">No.</th>
                         <th className="px-4 py-3 text-left">Date</th>
+                        <th className="px-4 py-3 text-left">Day</th>
                         <th className="px-4 py-3 text-left">Start Time</th>
                         <th className="px-4 py-3 text-left">Doctor</th>
                         <th className="px-4 py-3 text-left">Status</th>
@@ -147,6 +183,7 @@ function ShowAppointments() {
                         <tr key={appointment._id} className={`hover:bg-[#FAF5E9] transition-colors duration-150 ${index % 2 ? 'bg-[#FAF5E9]' : 'bg-[#E3D7CD]'}`}>
                           <td className="px-4 py-3">{index + 1}</td>
                           <td className="px-4 py-3">{appointment.date}</td>
+                          <td className="px-4 py-3">{appointment.day}</td>
                           <td className="px-4 py-3">{appointment.startTime}</td>
                           <td className="px-4 py-3">{appointment.doctorName}</td>
                           <td className={`px-4 py-3 ${getStatusClass(appointment.appointmentStatus)}`}>
