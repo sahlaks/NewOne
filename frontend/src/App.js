@@ -45,6 +45,7 @@ import NotFoundPage from "./Components/ErrorPages/NotFound";
 import ServerErrorPage from "./Components/ErrorPages/InternalServer";
 import { setNavigate } from "./utils/navigateHelper";
 import CreateSlot from "./Pages/Doctor/Planner/rrule";
+import DoctorDashboard from "./Pages/Doctor/Dashboard/Dashboard";
 
 function App() {
   // const navigate = useNavigate()
