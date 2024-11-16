@@ -381,7 +381,17 @@ const ChatPage = () => {
                     alt={selectedDoctor.doctorName}
                     className="w-10 h-10 rounded-full mr-4"
                   />
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <h2 className="text-lg font-semibold font-[black] flex items-center">
+                    <span
+                      className={`h-3 w-3 mr-2 rounded-full inline-block ${
+                        onlineUsers[selectedDoctor._id]
+                          ? "bg-green-500"
+                          : "bg-gray-500"
+                      }`}
+                      title={
+                        onlineUsers[selectedDoctor._id] ? "Online" : "Offline"
+                      }
+                    ></span>
                     {selectedDoctor.doctorName}
                   </h2>
                 </div>

@@ -329,7 +329,7 @@ const DoctorChat = () => {
                 onClick={() =>
                   handleParentSelect({
                     _id: chat.parentId,
-                    doctorName: chat.parentName,
+                    parentName: chat.parentName,
                     image: chat.parentImage,
                   })
                 }
@@ -379,7 +379,17 @@ const DoctorChat = () => {
                     alt={selectedParent.parentName}
                     className="w-10 h-10 rounded-full mr-4"
                   />
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <h2 className="text-lg font-semibold font-[black] flex items-center">
+                    <span
+                      className={`h-3 w-3 mr-2 rounded-full inline-block ${
+                        onlineUsers[selectedParent._id]
+                          ? "bg-green-500"
+                          : "bg-gray-500"
+                      }`}
+                      title={
+                        onlineUsers[selectedParent._id] ? "Online" : "Offline"
+                      }
+                    ></span>
                     {selectedParent.parentName}
                   </h2>
                 </div>
