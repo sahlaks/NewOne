@@ -44,8 +44,8 @@ const createServer = () => {
         }));
         app.use(express_1.default.json());
         app.use(express_1.default.urlencoded({ extended: true }));
-        app.use('/uploads', express_1.default.static(path_1.default.resolve(__dirname, '../../uploads')));
-        console.log(path_1.default.resolve(__dirname, '../../uploads'));
+        app.use('/uploads', express_1.default.static(path_1.default.resolve(__dirname, '../uploads')));
+        console.log(path_1.default.resolve(__dirname, '../uploads'));
         app.use('/api/parents', parentRoutes_1.default);
         app.use('/api/doctor', doctorRoutes_1.default);
         app.use('/api/admin', adminRoutes_1.default);
