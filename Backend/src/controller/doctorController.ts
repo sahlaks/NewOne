@@ -27,6 +27,7 @@ export class DoctorController {
       const { doctorName, email, mobileNumber, password } =
         req.body;
         const file = req.file
+        console.log(req.body,file);
         
         if (!file) {
           return res.status(400).json({
