@@ -28,6 +28,7 @@ class DoctorUseCase {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Check if the user already exists
+                console.log('usecase');
                 const existingUser = yield this.idoctorRepository.findDoctorByEmail(email);
                 if (existingUser) {
                     return { status: false, message: "Email already registered" };
@@ -45,6 +46,7 @@ class DoctorUseCase {
                     otp
                 });
                 yield tempUser.save();
+                console.log(tempUser);
                 console.log('user', tempUser);
                 // Send email with OTP
                 const mailOptions = {
@@ -69,6 +71,7 @@ class DoctorUseCase {
     saveUser(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log('usecase');
                 const savedUser = yield this.idoctorRepository.saveUserDetails(data);
                 if (savedUser) {
                     const token = (0, JwtCreation_1.jwtCreation)(savedUser._id, 'Doctor');

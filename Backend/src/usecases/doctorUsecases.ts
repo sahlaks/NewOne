@@ -32,6 +32,8 @@ export class DoctorUseCase {
   ): Promise<{ status: boolean; message?: string; otp?: string }> {
     try {
       // Check if the user already exists
+      console.log('usecase');
+      
       const existingUser = await this.idoctorRepository.findDoctorByEmail(
         email
       );
@@ -52,6 +54,8 @@ export class DoctorUseCase {
         otp
       })
       await tempUser.save()
+      console.log(tempUser);
+      
       console.log('user', tempUser);
       
       
@@ -85,6 +89,8 @@ export class DoctorUseCase {
     refreshtoken?: string;
   }> {
     try {
+      console.log('usecase');
+      
       const savedUser = await this.idoctorRepository.saveUserDetails(data);
 
       if (savedUser) {

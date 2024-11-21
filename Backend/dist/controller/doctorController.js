@@ -37,6 +37,7 @@ class DoctorController {
                     });
                 }
                 const documentUrl = `uploads/${file.filename}`;
+                console.log(documentUrl, 'doc');
                 const result = yield this.DoctorUseCase.registrationDoctor(doctorName, email, mobileNumber, password, documentUrl);
                 if (result.status) {
                     return res.status(200).json({
