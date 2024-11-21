@@ -38,8 +38,8 @@ const createServer = () => {
     
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
-    app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
-    console.log(path.resolve(__dirname, '../uploads'));
+    app.use('/uploads', express.static(path.resolve(__dirname, '../../../uploads')));
+    console.log(path.resolve(__dirname, '../../../uploads'));
     
     app.use('/api/parents',parentRouter)
     app.use('/api/doctor', doctorRouter)
