@@ -248,9 +248,9 @@ const DoctorProfile = () => {
     };
   }, [image]);
 
-  const documentUrl = certificateUrl
-    ? `http://localhost:5000/${certificateUrl}`
-    : null;
+  // const documentUrl = certificateUrl
+  //   ? `http://localhost:5000/${certificateUrl}`
+  //   : null;
 
   return (
     <>
