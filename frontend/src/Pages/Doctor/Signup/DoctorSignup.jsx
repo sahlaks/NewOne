@@ -107,7 +107,7 @@ function DoctorSignup() {
         formData.append("doctorName", doctorDetails.doctorName);
         formData.append("email", doctorDetails.email);
         formData.append("mobileNumber", doctorDetails.mobileNumber);
-        //formData.append("licenseGrade", doctorDetails.licenseGrade);
+        formData.append("licenseGrade", doctorDetails.licenseGrade);
         formData.append("password", doctorDetails.password);
         formData.append("confirmPassword", doctorDetails.confirmPassword);
         if (document) {
