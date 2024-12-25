@@ -433,6 +433,7 @@ class DoctorController {
                     day: dayOfWeek,
                 };
             });
+            console.log('slots', slots);
             return res.status(200).json({ success: true, data: slots });
         });
     }
@@ -441,6 +442,7 @@ class DoctorController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             const createdSlots = req.body;
+            console.log(createdSlots);
             const doc = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             try {
                 const processedSlots = createdSlots.map((slot) => {
@@ -454,6 +456,7 @@ class DoctorController {
                         doctorId: new mongoose_1.default.Types.ObjectId(doc),
                     };
                 });
+                console.log(processedSlots);
                 const savedSlots = yield ruleModel_1.default.insertMany(processedSlots);
                 if (savedSlots)
                     return res.status(200).json({ success: true, message: 'Slots created successfully!' });

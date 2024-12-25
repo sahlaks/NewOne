@@ -442,12 +442,16 @@ async createSlotsUsingRule(req: AuthRequest, res: Response, next: NextFunction):
         day: dayOfWeek, 
       };
     });
+    console.log('slots',slots);
+    
   return res.status(200).json({success:true, data: slots})  
 }
 
 /*............................................save created slots................................................*/
 async saveCreatedSlots(req: AuthRequest, res: Response, next: NextFunction): Promise<Response | void>{
   const createdSlots  = req.body;
+  console.log(createdSlots);
+  
   const doc = req.user?.id as string
   try {
     const processedSlots = createdSlots.map((slot: any) => {
@@ -462,6 +466,8 @@ async saveCreatedSlots(req: AuthRequest, res: Response, next: NextFunction): Pro
         doctorId: new mongoose.Types.ObjectId(doc),
       };
     });
+    console.log(processedSlots);
+    
   
     const savedSlots = await ruleModel.insertMany(processedSlots);
     if(savedSlots)  return res.status(200).json({ success: true, message: 'Slots created successfully!'});
