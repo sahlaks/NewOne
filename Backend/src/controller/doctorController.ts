@@ -10,6 +10,7 @@ import uploadDocument from "../infrastructure/services/documentUpload";
 import tempModel from "../infrastructure/databases/temporaryModel";
 import ruleModel from "../infrastructure/databases/ruleModel";
 import { RRule, RRuleSet, Frequency } from 'rrule';
+import { DateTime } from 'luxon';
 
 type Weekday = 'SU' | 'MO' | 'TU' | 'WE' | 'TH' | 'FR' | 'SA';
 
@@ -454,15 +455,28 @@ async saveCreatedSlots(req: AuthRequest, res: Response, next: NextFunction): Pro
   
   const doc = req.user?.id as string
   try {
-    const processedSlots = createdSlots.map((slot: any) => {
-      const startDateTime = new Date(slot.startTime);
-      const endDateTime = new Date(slot.endTime);
+    // const processedSlots = createdSlots.map((slot: any) => {
+    //   const startDateTime = new Date(slot.startTime);
+    //   const endDateTime = new Date(slot.endTime);
 
+    //   return {
+    //     date: startDateTime.toISOString().split('T')[0],
+    //     day: slot.day,
+    //     startTime: startDateTime.toTimeString().substring(0, 5),
+    //     endTime: endDateTime.toTimeString().substring(0, 5),
+    //     doctorId: new mongoose.Types.ObjectId(doc),
+    //   };
+    // });
+
+    const processedSlots = createdSlots.map((slot: any) => {
+      const startDateTime = DateTime.fromISO(slot.startTime, { zone: 'utc' }).setZone('Asia/Kolkata');
+      const endDateTime = DateTime.fromISO(slot.endTime, { zone: 'utc' }).setZone('Asia/Kolkata');
+    
       return {
-        date: startDateTime.toISOString().split('T')[0],
+        date: startDateTime.toISODate(), // '2025-01-22'
         day: slot.day,
-        startTime: startDateTime.toTimeString().substring(0, 5),
-        endTime: endDateTime.toTimeString().substring(0, 5),
+        startTime: startDateTime.toFormat('HH:mm'), // '14:30'
+        endTime: endDateTime.toFormat('HH:mm'),     // '15:30'
         doctorId: new mongoose.Types.ObjectId(doc),
       };
     });

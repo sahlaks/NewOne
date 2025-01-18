@@ -20,6 +20,7 @@ const JwtCreation_1 = require("../infrastructure/services/JwtCreation");
 const temporaryModel_1 = __importDefault(require("../infrastructure/databases/temporaryModel"));
 const ruleModel_1 = __importDefault(require("../infrastructure/databases/ruleModel"));
 const rrule_1 = require("rrule");
+const luxon_1 = require("luxon");
 class DoctorController {
     constructor(DoctorUseCase) {
         this.DoctorUseCase = DoctorUseCase;
@@ -445,14 +446,25 @@ class DoctorController {
             console.log(createdSlots);
             const doc = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
             try {
+                // const processedSlots = createdSlots.map((slot: any) => {
+                //   const startDateTime = new Date(slot.startTime);
+                //   const endDateTime = new Date(slot.endTime);
+                //   return {
+                //     date: startDateTime.toISOString().split('T')[0],
+                //     day: slot.day,
+                //     startTime: startDateTime.toTimeString().substring(0, 5),
+                //     endTime: endDateTime.toTimeString().substring(0, 5),
+                //     doctorId: new mongoose.Types.ObjectId(doc),
+                //   };
+                // });
                 const processedSlots = createdSlots.map((slot) => {
-                    const startDateTime = new Date(slot.startTime);
-                    const endDateTime = new Date(slot.endTime);
+                    const startDateTime = luxon_1.DateTime.fromISO(slot.startTime, { zone: 'utc' }).setZone('Asia/Kolkata');
+                    const endDateTime = luxon_1.DateTime.fromISO(slot.endTime, { zone: 'utc' }).setZone('Asia/Kolkata');
                     return {
-                        date: startDateTime.toISOString().split('T')[0],
+                        date: startDateTime.toISODate(), // '2025-01-22'
                         day: slot.day,
-                        startTime: startDateTime.toTimeString().substring(0, 5),
-                        endTime: endDateTime.toTimeString().substring(0, 5),
+                        startTime: startDateTime.toFormat('HH:mm'), // '14:30'
+                        endTime: endDateTime.toFormat('HH:mm'), // '15:30'
                         doctorId: new mongoose_1.default.Types.ObjectId(doc),
                     };
                 });
